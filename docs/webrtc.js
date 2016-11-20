@@ -264,6 +264,7 @@ function createDummyStream(audio = false, video = true) {
             streamInfo.stream = new (window.MediaStream || window.webkitMediaStream)(tracks);
             var video = document.createElement('video');
             video.srcObject = streamInfo.stream;
+            video.volume = 0.2;
             video.play();
             streamInfo.video = video;
             localStreams.push(streamInfo);
