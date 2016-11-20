@@ -44,6 +44,7 @@ function joinRoom() {
 
 function addStream(userId, streamInfo) {
     var container = document.body;
+    var stream = streamInfo.stream;
     
     var remoteStreamContainer = document.getElementById('remoteStreams_' + userId);
     if(!remoteStreamContainer) {
@@ -56,7 +57,7 @@ function addStream(userId, streamInfo) {
     
     var audioMeterContainer = document.createElement('div');
     var audioMeter = document.createElement('div');
-    audioMeter.id = streamInfo.stream.id + '_audio';
+    audioMeter.id = stream.id + '_audio';
     audioMeterContainer.appendChild(audioMeter);
 
     // var video = document.createElement('video');
@@ -66,11 +67,11 @@ function addStream(userId, streamInfo) {
     streamContainer.appendChild(streamInfo.cnv || streamInfo.video);
     remoteStreamContainer.appendChild(streamContainer);
     
-    var audioTracks = streamInfo.stream.getAudioTracks();
+    var audioTracks = stream.getAudioTracks();
     if(audioTracks.length) {
-        mediaStreamSource = audioContext.createMediaStreamSource(stream);
+        mediaStreamSource = audioContext.createMediaStreamSource(streamstream);
         audioProcessor = audioContext.createScriptProcessor(512);
-        audioProcessor.meterId = streamInfo.stream.id + '_audio';
+        audioProcessor.meterId = stream.id + '_audio';
         audioProcessor.onaudioprocess = function(evt) {
             var buf = evt.inputBuffer.getChannelData(0);
             var maxVal = 0;
@@ -84,9 +85,6 @@ function addStream(userId, streamInfo) {
     } else {
         audioMeter.classList.add('no');
     }
-    
-    video.srcObject = stream;
-    video.play();
 };
 
 function removeVideo(stream) {
