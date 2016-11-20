@@ -60,11 +60,14 @@ function createStreamElement(userId, streamInfo) {
     audioMeter.id = stream.id + '_audio';
     audioMeterContainer.appendChild(audioMeter);
 
-    // var video = document.createElement('video');
-    // video.id = streamInfo.stream.id + '_video';
+    var video = document.createElement('video');
+    video.id = streamInfo.stream.id + '_video';
+    video.srcObject = streamInfo.stream;
+    video.muted = true;
+    video.play();
     var streamContainer = document.createElement('div');
     streamContainer.appendChild(audioMeterContainer);
-    streamContainer.appendChild(streamInfo.cnv || streamInfo.video);
+    streamContainer.appendChild(streamInfo.cnv || video);
     remoteStreamContainer.appendChild(streamContainer);
     
     var audioTracks = stream.getAudioTracks();
@@ -263,11 +266,6 @@ function createDummyStream(audio = false, video = true) {
         .then(tracks => createDummyVideoTrack(video, tracks))
         .then(([streamInfo, tracks]) => {
             streamInfo.stream = new (window.MediaStream || window.webkitMediaStream)(tracks);
-            var video = document.createElement('video');
-            video.srcObject = streamInfo.stream;
-            video.muted = true;
-            video.play();
-            streamInfo.video = video;
             localStreams.push(streamInfo);
             return streamInfo;
         });
