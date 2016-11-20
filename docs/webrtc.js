@@ -42,7 +42,7 @@ function joinRoom() {
     signalingChannel.postMessage(JSON.stringify({join: true, remoteId: idList[0]}));
 }
 
-function addStream(userId, streamInfo) {
+function createStreamElement(userId, streamInfo) {
     var container = document.body;
     var stream = streamInfo.stream;
     
@@ -216,22 +216,25 @@ function webrtcStart(remoteId) {
     if('ontrack' in pc) {
         pc.ontrack = function(evt) {
             if(evt.track.kind === 'video') {
-                addStream(remoteId, evt.streams[0]);
+                createStreamElement(remoteId, evt.streams[0]);
             }
         };
     } else {
         pc.onaddstream = function(evt) {
-            addStream(remoteId, evt.stream);
+            createStreamElement(remoteId, evt.stream);
         }
     }
 
+
     if(localStreams.length) {
         localStreams.forEach(streamInfo => {
-            addStream(myId, streamInfo);
+            createStreamElement(myId, streamInfo);
+            addTracks(pc, streamInfo.stream);
         });
     } else {
         createDummyStream(true, true).then(streamInfo => {
-            addStream(myId, streamInfo);
+            createStreamElement(myId, streamInfo);
+            addTracks(pc, streamInfo.stream);
         });
     }
 }
