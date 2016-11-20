@@ -66,7 +66,7 @@ function addStream(userId, streamInfo) {
     streamContainer.appendChild(streamInfo.cnv || streamInfo.video);
     remoteStreamContainer.appendChild(streamContainer);
     
-    var audioTracks = stream.getAudioTracks();
+    var audioTracks = streamInfo.stream.getAudioTracks();
     if(audioTracks.length) {
         mediaStreamSource = audioContext.createMediaStreamSource(stream);
         audioProcessor = audioContext.createScriptProcessor(512);
