@@ -261,7 +261,7 @@ function createDummyStream(audio = false, video = true) {
     return createDummyAundioTrack(audio)
         .then(tracks => createDummyVideoTrack(video, tracks))
         .then(([streamInfo, tracks]) => {
-            //streamInfo.stream = new (window.MediaStream || window.webkitMediaStream)(tracks);
+            streamInfo.stream = new (window.MediaStream || window.webkitMediaStream)(tracks);
             localStreams.push(streamInfo);
             return streamInfo;
         });
@@ -303,7 +303,6 @@ function createDummyVideoTrack(video, tracks) {
                 top: (cnv.height - (img.naturalHeight * ratio)) / 2,
                 width: img.naturalWidth * ratio,
                 height: img.naturalHeight * ratio,
-                stream: stream
             }, tracks]);
             renderDummyVideoTrack();
         }
