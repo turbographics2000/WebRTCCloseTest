@@ -7,9 +7,37 @@
         <link href="style.css" rel="stylesheet">
     </head>
     <body>
+        <h1 id="dispMyId"></h1>
+        <h3>自分のストリーム</h3>
+        <button id="addStream">ストリームを追加(合計３つまでストリームを追加できます)</button>
         <div id="selfStreams"></div>
-        <div id="remoteStreams"></div>
         <button>Connect</button>
         <button>Close</button>
+        <script src="uuid.core.js"></script>
+        <script src="broadcastchannelex_class.js"></script>
+        <script src="webrtc.js"></script>
+        <script>
+            let bcex = new BroadcastChannelEx({
+                onMyId: id => {
+                    myId = id;
+                    dispMyId.textContent = id;
+                },
+                onJoinMember: (memberId, members) => {
+                    connectedMembers = members;
+                    webrtcStart(memberId);
+                },
+                onLeaveMember: memberId => {
+
+                },
+                onHost: _ => {
+                    document.title = '★' + document.title
+                },
+                onFull: _ => {
+                    disMyId.textContent = '満員'
+                }
+            })
+
+            bcex.join()
+        </script>
     </body>
 </html>
