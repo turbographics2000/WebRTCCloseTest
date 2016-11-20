@@ -56,11 +56,11 @@ function addStream(userId, streamInfo) {
     
     var audioMeterContainer = document.createElement('div');
     var audioMeter = document.createElement('div');
-    audioMeter.id = stream.id + '_audio';
+    audioMeter.id = streamInfo.stream.id + '_audio';
     audioMeterContainer.appendChild(audioMeter);
 
     // var video = document.createElement('video');
-    // video.id = stream.id + '_video';
+    // video.id = streamInfo.stream.id + '_video';
     // var streamContainer = document.createElement('div');
     streamContainer.appendChild(audioMeterContainer);
     streamContainer.appendChild(streamInfo.cnv || streamInfo.video);
@@ -70,7 +70,7 @@ function addStream(userId, streamInfo) {
     if(audioTracks.length) {
         mediaStreamSource = audioContext.createMediaStreamSource(stream);
         audioProcessor = audioContext.createScriptProcessor(512);
-        audioProcessor.meterId = stream.id + '_audio';
+        audioProcessor.meterId = streamInfo.stream.id + '_audio';
         audioProcessor.onaudioprocess = function(evt) {
             var buf = evt.inputBuffer.getChannelData(0);
             var maxVal = 0;
