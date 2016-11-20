@@ -63,7 +63,7 @@ function createStreamElement(userId, streamInfo) {
     var video = document.createElement('video');
     video.id = streamInfo.stream.id + '_video';
     video.srcObject = streamInfo.stream;
-    video.muted = true;
+    video.muted = !!streamInfo.cnv;
     video.play();
     var streamContainer = document.createElement('div');
     streamContainer.appendChild(audioMeterContainer);
