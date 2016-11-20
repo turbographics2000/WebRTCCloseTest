@@ -42,7 +42,7 @@ function joinRoom() {
     signalingChannel.postMessage(JSON.stringify({join: true, remoteId: idList[0]}));
 }
 
-function addStream(userId, stream) {
+function addStream(userId, streamInfo) {
     var container = document.body;
     
     var remoteStreamContainer = document.getElementById('remoteStreams_' + userId);
@@ -59,11 +59,11 @@ function addStream(userId, stream) {
     audioMeter.id = stream.id + '_audio';
     audioMeterContainer.appendChild(audioMeter);
 
-    var video = document.createElement('video');
-    video.id = stream.id + '_video';
-    var streamContainer = document.createElement('div');
+    // var video = document.createElement('video');
+    // video.id = stream.id + '_video';
+    // var streamContainer = document.createElement('div');
     streamContainer.appendChild(audioMeterContainer);
-    streamContainer.appendChild(video);
+    streamContainer.appendChild(streamInfo.cnv || streamInfo.video);
     remoteStreamContainer.appendChild(streamContainer);
     
     var audioTracks = stream.getAudioTracks();
@@ -228,12 +228,12 @@ function webrtcStart(remoteId) {
     }
 
     if(localStreams.length) {
-        localStreams.forEach(({stream}) => {
-            addStream(myId, stream);
+        localStreams.forEach(streamInfo => {
+            addStream(myId, streamInfo);
         });
     } else {
-        createDummyStream(true, true).then(({stream}) => {
-            addStream(myId, stream);
+        createDummyStream(true, true).then(streamInfo => {
+            addStream(myId, streamInfo);
         });
     }
 }
@@ -262,6 +262,10 @@ function createDummyStream(audio = false, video = true) {
         .then(tracks => createDummyVideoTrack(video, tracks))
         .then(([streamInfo, tracks]) => {
             streamInfo.stream = new (window.MediaStream || window.webkitMediaStream)(tracks);
+            var video = document.createElement('video');
+            video.srcObject = streamInfo.stream;
+            video.play();
+            streamInfo.video = video;
             localStreams.push(streamInfo);
             return streamInfo;
         });
