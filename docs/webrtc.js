@@ -61,7 +61,7 @@ function addStream(userId, streamInfo) {
 
     // var video = document.createElement('video');
     // video.id = streamInfo.stream.id + '_video';
-    // var streamContainer = document.createElement('div');
+    var streamContainer = document.createElement('div');
     streamContainer.appendChild(audioMeterContainer);
     streamContainer.appendChild(streamInfo.cnv || streamInfo.video);
     remoteStreamContainer.appendChild(streamContainer);
