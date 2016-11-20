@@ -281,7 +281,6 @@ function createDummyVideoTrack(video, tracks) {
     if(!video) return Promise.resolve([{}, tracks]);
     return new Promise((resolve, reject) => {
         let cnv = document.createElement('canvas');
-        document.body.appendChild(cnv);
         cnv.width = 320;
         cnv.height = 240;
         var ctx = cnv.getContext('2d');
