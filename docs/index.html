@@ -8,7 +8,6 @@
     </head>
     <body>
         <h1 id="dispMyId"></h1>
-        <h3>自分のストリーム</h3>
         <button id="addStream">ストリームを追加(合計３つまでストリームを追加できます)</button>
         <div id="selfStreams"></div>
         <button>Connect</button>
@@ -20,11 +19,11 @@
             let bcex = new BroadcastChannelEx({
                 onMyId: id => {
                     myId = id;
-                    dispMyId.textContent = id;
+                    dispMyId.textContent = '自分のID:' + id
                 },
                 onJoinMember: (memberId, members) => {
-                    connectedMembers = members;
-                    webrtcStart(memberId);
+                    connectedMembers = members
+                    webrtcStart(memberId)
                 },
                 onLeaveMember: memberId => {
 

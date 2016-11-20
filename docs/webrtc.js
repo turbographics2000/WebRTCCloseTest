@@ -46,12 +46,12 @@ function createStreamElement(userId, streamInfo) {
     var container = document.body;
     var stream = streamInfo.stream;
     
-    var remoteStreamContainer = document.getElementById('remoteStreams_' + userId);
+    var remoteStreamContainer = document.getElementById('streams_' + userId);
     if(!remoteStreamContainer) {
         var title = document.createElement('h3');
         title.textContent = userId + 'のストリーム'; 
         remoteStreamContainer = document.createElement('div');
-        remoteStreamContainer.id = 'remoteStreams_' + userId;
+        remoteStreamContainer.id = 'streams_' + userId;
         container.appendChild(remoteStreamContainer);
     }
     
@@ -64,10 +64,11 @@ function createStreamElement(userId, streamInfo) {
     video.id = streamInfo.stream.id + '_video';
     video.srcObject = streamInfo.stream;
     video.muted = !!streamInfo.cnv;
+    video.controls = true;
     video.play();
     var streamContainer = document.createElement('div');
     streamContainer.appendChild(audioMeterContainer);
-    streamContainer.appendChild(streamInfo.cnv || video);
+    streamContainer.appendChild(video);
     remoteStreamContainer.appendChild(streamContainer);
     
     var audioTracks = stream.getAudioTracks();
@@ -285,6 +286,9 @@ function createDummyVideoTrack(video, tracks) {
     if(!video) return Promise.resolve([{}, tracks]);
     return new Promise((resolve, reject) => {
         let cnv = document.createElement('canvas');
+        cnv.style.position = 'absolute';
+        cnv.style.top = -100000;
+        document.body.appendChild(cnv);
         cnv.width = 320;
         cnv.height = 240;
         var ctx = cnv.getContext('2d');
