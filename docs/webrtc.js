@@ -69,7 +69,7 @@ function addStream(userId, streamInfo) {
     
     var audioTracks = stream.getAudioTracks();
     if(audioTracks.length) {
-        mediaStreamSource = audioContext.createMediaStreamSource(streamstream);
+        mediaStreamSource = audioContext.createMediaStreamSource(stream);
         audioProcessor = audioContext.createScriptProcessor(512);
         audioProcessor.meterId = stream.id + '_audio';
         audioProcessor.onaudioprocess = function(evt) {
