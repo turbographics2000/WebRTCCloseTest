@@ -105,8 +105,8 @@ function removeMember(memberId) {
         removeStream(streamInfos[i]);
         delete streams[memberId][streamInfos[i].stream.id];
     }
-    title.parentElement.removeChild(title);
-    streamContainer.parentElement.removeChild(streamContainer);
+    if(title) title.parentElement.removeChild(title);
+    if(streamContainer) streamContainer.parentElement.removeChild(streamContainer);
     delete streams[memberId];
     pcs[memberId].close();
     delete pcs[memberId];
