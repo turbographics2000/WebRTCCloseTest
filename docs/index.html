@@ -16,6 +16,7 @@
         <script>
             let bcex = new BroadcastChannelEx({
                 onMyId: id => {
+                    if(!id) debugger;
                     console.log('onMyId', id);
                     myId = id;
                     dispMyId.textContent = '自分のID:' + id
