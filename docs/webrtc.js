@@ -210,10 +210,6 @@ function webrtcStart(remoteId) {
     var pc = pcs[remoteId] = new RTCPeerConnection(configuration);
     pc.remoteId = remoteId;
 
-    pc.oniceconnectionstatechange = evt => {
-        console.log('oniceconnectionstatechange', evt);
-    };
-    
     pc.onicecandidate = evt => {
         if(evt.candidate) {
             signalingChannel.send({candidate: evt.candidate}, remoteId);
@@ -231,6 +227,7 @@ function webrtcStart(remoteId) {
     };
     
     pc.oniceconnectionstatechange = function(evt) {
+        console.log('oniceconnectionstatechange', pc.iceConnectionState);
         if(pc.iceConnectionState === 'closed') {
             delete pcs[this.remoteId];
         }
