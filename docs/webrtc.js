@@ -31,12 +31,16 @@ addAudioTrack.onclick = function() {
     createDummyAundioTrack().then(([track]) => {
         var localStreams = Object.entries(streams[myId]).map(val => val[1].stream);
         for(let remoteId in pcs) {
-            if(localStreams.length === 1)
+            if(localStreams.length === 1){
+                console.log('pc.addTrack', localStreams[0].id);
                 trackSenders[track.id] = pcs[remoteId].addTrack(track, localStreams[0]);
-            else if(localStreams.length === 2)
+            }else if(localStreams.length === 2) {
+                console.log('pc.addTrack', localStreams[0].id, localStreams[1].id);
                 trackSenders[track.id] = pcs[remoteId].addTrack(track, localStreams[0], localStreams[1]);
-            else if(localStreams.length === 3)
+            }else if(localStreams.length === 3) {
+                console.log('pc.addTrack', localStreams[0].id, localStreams[1].id, localStreams[2].id);
                 trackSenders[track.id] = pcs[remoteId].addTrack(track, localStreams[0], localStreams[1], localStreams[2]);
+            }
         }
     })
 }
@@ -92,6 +96,10 @@ function addStreamElement(userId, streamInfo) {
         streamContainer.classList.add('streams');
         container.appendChild(streamContainer);
     }
+
+    var streamIdLabel = document.createElement('div');
+    streamIdLabel.classList.add('streamid-label');
+    streamIdLabel.textContent = stream.id;
     
     var audioMeterContainer = document.createElement('div');
     audioMeterContainer.classList.add('audio-meter-container');
@@ -110,6 +118,7 @@ function addStreamElement(userId, streamInfo) {
 
     var streamItem = streamInfo.streamItem = document.createElement('div');
     streamItem.classList.add('stream-item');
+    streamItem.appendChild(streamIdLabel);
     streamItem.appendChild(video);
     streamItem.appendChild(audioMeterContainer);
     streamItem.appendChild(trackButtonContainer);

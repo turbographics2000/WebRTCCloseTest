@@ -15,6 +15,11 @@
     margin-right: 10px;
 }
 
+.streamid-label {
+    text-align: center;
+    font-size: 14px;
+}
+
 .audio-meter-contaienr {
     height: 4px;
 }
