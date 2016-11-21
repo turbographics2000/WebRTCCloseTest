@@ -61,6 +61,10 @@ function addStreamElement(userId, streamInfo) {
     //var container = document.body;
     var stream = streamInfo.stream;
 
+    stream.onaddtrack = function(evt) {
+        console.log('onaddtrack', evt.track.id);
+        createTrackButton(this.id, evt.track.id);
+    }
     stream.onremovetrack = function(evt) {
         console.log('onremovetrack', evt.track.id);
     }
@@ -83,7 +87,9 @@ function addStreamElement(userId, streamInfo) {
     }
     
     var audioMeterContainer = document.createElement('div');
+    audioMeterContainer.classList.add('audio-meter-container');
     var audioMeter = document.createElement('div');
+    audioMeter.classList.add('audio-meter');
     audioMeterContainer.appendChild(audioMeter);
 
     var video = streamInfo.video = document.createElement('video');
@@ -91,19 +97,16 @@ function addStreamElement(userId, streamInfo) {
     video.muted = !!streamInfo.cnv;
     video.controls = true;
     video.play();
+
+    var trackButtonContainer = document.createElement('div');
+    trackButtonContainer.id = stream.id + '_trackbutton';
+    stream.getTracks().forEach(track => createTrackButton(sream.id, track.id));
+
     var streamItem = streamInfo.streamItem = document.createElement('div');
     streamItem.classList.add('stream-item');
-    streamItem.appendChild(audioMeterContainer);
     streamItem.appendChild(video);
-    stream.getTracks().forEach(track => {
-        var removeTrackButton = document.createElement('div');
-        removeTrackButton.textContent = track.id;
-        removeTrackButton.dataset.trackId = track.id;
-        removeTrackButton.classList.add('track-button');
-        removeTrackButton.onmouseenter = removeTrackOnMouseEnter;
-        removeTrackButton.onmouseleave = removeTrackOnMouseLeave;
-        streamItem.appendChild(removeTrackButton);
-    })
+    streamItem.appendChild(audioMeterContainer);
+    streamItem.appendChild(trackButtonContainer);
     streamContainer.appendChild(streamItem);
     
     var audioTracks = stream.getAudioTracks();
@@ -125,6 +128,17 @@ function addStreamElement(userId, streamInfo) {
         audioMeter.classList.add('no');
     }
 };
+
+function createTrackButton(streamId, trackId) {
+    var trackButtonContainer = document.getElementById(streamId + '_trackbutton');
+    var removeTrackButton = document.createElement('div');
+    removeTrackButton.textContent = trackId;
+    removeTrackButton.dataset.trackId = trackId;
+    removeTrackButton.classList.add('track-button');
+    removeTrackButton.onmouseenter = removeTrackOnMouseEnter;
+    removeTrackButton.onmouseleave = removeTrackOnMouseLeave;
+    trackButtonContainer.appendChild(removeTrackButton);
+}
 
 function removeMember(memberId) {
     console.log('removeMebmer', memberId);
