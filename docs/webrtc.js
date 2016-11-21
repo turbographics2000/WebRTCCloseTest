@@ -238,12 +238,14 @@ function webrtcStart(remoteId) {
 
     if('ontrack' in pc) {
         pc.ontrack = function(evt) {
+            console.log('ontrack');
             if(evt.track.kind === 'video') {
                 addStreamElement(remoteId, {stream: evt.streams[0]});
             }
         };
     } else {
         pc.onaddstream = function(evt) {
+            console.log('onaddstream');
             addStreamElement(this.remoteId, {stream: evt.stream});
         }
     }
