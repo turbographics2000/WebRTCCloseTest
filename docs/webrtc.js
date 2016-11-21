@@ -368,7 +368,7 @@ function createDummyAundioTrack(flg = true) {
 }
 
 function createDummyVideoTrack(flg, tracks) {
-    console.log('createDummyVideoTrack', video, tracks);
+    console.log('createDummyVideoTrack', flg, tracks);
     if(!flg) return Promise.resolve([{}, tracks]);
     return new Promise((resolve, reject) => {
         let cnv = document.createElement('canvas');
