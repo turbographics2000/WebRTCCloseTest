@@ -250,7 +250,7 @@ function webrtcStart(remoteId) {
         }
     }
 
-    if(streams[myid]) {
+    if(streams[myId]) {
         streams[myId].entries().forEach(([key, streamInfo]) => {
             addStreamElement(myId, streamInfo);
             addTracks(pc, streamInfo.stream);
