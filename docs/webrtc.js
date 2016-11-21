@@ -106,14 +106,14 @@ function removeMember(memberId) {
 }
 
 function removeStream(streamInfo) {
+    streamInfo.stream.getTracks().forEach(track => track.stop());
     if(streamInfo.mediaStreamSource) {
         streamInfo.mediaStreamSource.disconnect();
         streamInfo.audioProcessor.disconnect();
-        delete streamInfo.audioProcessor.audioMeter;
         delete streamInfo.mediaStreamSource;
+        delete streamInfo.audioProcessor.audioMeter;
         delete streamInfo.audioProcessor;
     }
-    streamInfo.stream.getTracks().forEach(track => track.stop());
     streamInfo.video.srcObject = null;
     delete streamInfo.video;
     streamInfo.streamItem.parentElement.removeChild(streamInfo.streamItem);
