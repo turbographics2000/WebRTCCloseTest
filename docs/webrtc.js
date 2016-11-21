@@ -159,12 +159,12 @@ function removeMember(memberId) {
 
 function removeStream(streamInfo) {
     console.log('removeStream', streamInfo);
-    streamInfo.audioProcessor.onaudioprocess = null;
     streamInfo.stream.getTracks().forEach(track => {
         delete trackSenders[track.id];
         track.stop();
     });
     if(streamInfo.mediaStreamSource) {
+        streamInfo.audioProcessor.onaudioprocess = null;
         streamInfo.mediaStreamSource.disconnect();
         streamInfo.audioProcessor.disconnect();
         delete streamInfo.mediaStreamSource;
