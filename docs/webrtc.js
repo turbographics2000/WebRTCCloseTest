@@ -100,7 +100,6 @@ function addStreamElement(userId, streamInfo) {
 
     var trackButtonContainer = document.createElement('div');
     trackButtonContainer.id = stream.id + '_trackbutton';
-    stream.getTracks().forEach(track => createTrackButton(stream.id, track.id));
 
     var streamItem = streamInfo.streamItem = document.createElement('div');
     streamItem.classList.add('stream-item');
@@ -109,6 +108,8 @@ function addStreamElement(userId, streamInfo) {
     streamItem.appendChild(trackButtonContainer);
     streamContainer.appendChild(streamItem);
     
+    stream.getTracks().forEach(track => createTrackButton(stream.id, track.id));
+
     var audioTracks = stream.getAudioTracks();
     if(audioTracks.length) {
         streamInfo.mediaStreamSource = audioContext.createMediaStreamSource(stream);
