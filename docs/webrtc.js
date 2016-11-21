@@ -106,7 +106,7 @@ function removeMember(memberId) {
 }
 
 function removeStream(streamInfo) {
-    streamInfo.audioProcessor = null;
+    streamInfo.audioProcessor.onaudioprocess = null;
     streamInfo.stream.getTracks().forEach(track => track.stop());
     if(streamInfo.mediaStreamSource) {
         streamInfo.mediaStreamSource.disconnect();
