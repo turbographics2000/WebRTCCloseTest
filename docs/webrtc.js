@@ -295,6 +295,7 @@ function createDummyAundioTrack(flg) {
         let oscillator = audioContext.createOscillator();
         let dst = oscillator.connect(audioContext.createMediaStreamDestination());
         oscillator.start();
+        dst.stream.getAudioTracks()[0].enabled = false;
         resolve([dst.stream.getAudioTracks()[0]]);
     });
 }
