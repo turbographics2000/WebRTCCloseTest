@@ -1,3 +1,7 @@
+.streams {
+    overflow: hidden;
+}
+
 .stream-item {
     float: left;
     margin-right: 10px;

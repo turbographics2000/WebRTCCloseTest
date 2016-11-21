@@ -16,7 +16,11 @@ signalingChannel.send = (msg, toId) => {
 }
 
 addStream.onclick = function() {
-
+    createDummyStream(true, true).then(streamInfo => {
+        addStreamElement(myId, streamInfo);
+        addTracks(pc, streamInfo.stream);
+        if(!renderStreamId) renderDummyVideoTrack();
+    });
 };
 
 
@@ -61,6 +65,7 @@ function addStreamElement(userId, streamInfo) {
         container.appendChild(title);
         streamContainer = document.createElement('div');
         streamContainer.id = 'streams_' + userId;
+        streamContainer.classList.add('streams');
         container.appendChild(streamContainer);
     }
     
@@ -248,7 +253,7 @@ function webrtcStart(remoteId) {
     pc.oniceconnectionstatechange = function(evt) {
         console.log('oniceconnectionstatechange', pc.iceConnectionState);
         if(['closed', 'failed'].includes(pc.iceConnectionState)) {
-            delete pcs[this.remoteId];
+            removeMember(this.remoteId);
         }
     }
 
@@ -330,7 +335,8 @@ function createDummyVideoTrack(video, tracks) {
         cnv.height = 240;
         var ctx = cnv.getContext('2d');
         ctx.font = '44px arial';
-        ctx.strokStyle = 'black'
+        ctx.strokStyle = 'black';
+        ctx.lineWidth = 3;
         ctx.fillStyle = 'white';
         ctx.textAlign = 'right';
         let img = new Image();
