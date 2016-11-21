@@ -336,7 +336,7 @@ function createDummyVideoTrack(video, tracks) {
         var ctx = cnv.getContext('2d');
         ctx.font = '44px arial';
         ctx.strokStyle = 'black';
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 2;
         ctx.fillStyle = 'white';
         ctx.textAlign = 'right';
         let img = new Image();
@@ -368,7 +368,7 @@ function renderDummyVideoTrack() {
         ctx.drawImage(img, left, top, width, height);
         var dt = new Date();
         var dtStr = [dt.getHours(), dt.getMinutes(), dt.getSeconds()].map(v => ('0' + v).slice(-2)).join(':');
+        ctx.strokeText(dtStr, cnv.width - left - 1, cnv.height - top - 1);
         ctx.fillText(dtStr, cnv.width - left - 3, cnv.height - top - 3);
-        ctx.strokeText(dtStr, cnv.width - left - 3, cnv.height - top - 3);
     };
 }
