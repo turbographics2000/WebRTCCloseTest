@@ -279,7 +279,7 @@ function addTracks(pc, stream) {
 
 function createDummyStream(audio = false, video = true) {
     if(!audio && !video) throw 'createDummyStream argument error';
-    if((streams[myid] || {}).entries().length >= 3) {
+    if((streams[myId] || {}).entries().length >= 3) {
         console.log('limit 3 streams');
         return;
     }
