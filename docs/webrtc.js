@@ -18,7 +18,7 @@ signalingChannel.send = (msg, toId) => {
 }
 
 addStream.onclick = function() {
-    createDummyStream(true, true).then(streamInfo => {
+    createDummyStream(false, true).then(streamInfo => {
         addStreamElement(myId, streamInfo);
         for(var remoteId in pcs) {
             addTracks(pcs[remoteId], streamInfo.stream);
