@@ -1,7 +1,7 @@
 #header, #container {
     width: 1200px;
     margin: auto;
-    padding: 30px;
+    padding: 10px;
 }
 #container {
     border:1px solid;
@@ -45,4 +45,8 @@
 
 video {
     background: black;
+}
+
+h1, h2, h3 {
+    margin: 0;
 }
