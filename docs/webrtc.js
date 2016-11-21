@@ -92,6 +92,7 @@ function addStreamElement(userId, streamInfo) {
     stream.getTracks().forEach(track => {
         var removeTrackButton = document.createElement('div');
         removeTrackButton.textContent = track.id;
+        removeTrackButton.dataset.trackId = track.id;
         removeTrackButton.classList.add('track-button');
         removeTrackButton.onmouseenter = removeTrackOnMouseEnter;
         removeTrackButton.onmouseleave = removeTrackOnMouseLeave;
