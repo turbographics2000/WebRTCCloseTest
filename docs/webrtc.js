@@ -36,7 +36,7 @@ addAudioTrack.onclick = function() {
                 trackSenders[track.id] = pcs[remoteId].addTrack(track, localStreams[0]);
             }else if(localStreams.length === 2) {
                 console.log('pc.addTrack', localStreams[0].id, localStreams[1].id);
-                trackSenders[track.id] = pcs[remoteId].addTrack(track, localStreams[0], localStreams[1]);
+                trackSenders[track.id] = pcs[remoteId].addTrack(track, localStreams[1]);
             }else if(localStreams.length === 3) {
                 console.log('pc.addTrack', localStreams[0].id, localStreams[1].id, localStreams[2].id);
                 trackSenders[track.id] = pcs[remoteId].addTrack(track, localStreams[0], localStreams[1], localStreams[2]);
