@@ -10,6 +10,7 @@
     overflow: hidden;
     padding: 10px;
     border: 1px solid;
+    padding-bottom: 10px;
 }
 
 .stream-item {
