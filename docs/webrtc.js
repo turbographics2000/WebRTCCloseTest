@@ -407,7 +407,6 @@ function createDummyVideoTrack(flg, tracks) {
     if(!flg) return Promise.resolve([{}, tracks]);
     return new Promise((resolve, reject) => {
         let cnv = document.createElement('canvas');
-        cnv.style.backgroundColor = 'black';
         cnv.style.position = 'absolute';
         cnv.style.top = '-100000px';
         document.body.appendChild(cnv);
