@@ -13,6 +13,6 @@
 }
 
 .track-button.hover {
-    transform: scale(2, 2, 1);
+    transform: scale(1.2, 1.2);
     background-color: #2299ee;
 }
