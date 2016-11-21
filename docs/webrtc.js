@@ -234,7 +234,7 @@ function webrtcStart(remoteId) {
     
     pc.oniceconnectionstatechange = function(evt) {
         console.log('oniceconnectionstatechange', pc.iceConnectionState);
-        if(pc.iceConnectionState === 'disconnected') {
+        if(['closed', 'failed'].includes(pc.iceConnectionState)) {
             delete pcs[this.remoteId];
         }
     }
