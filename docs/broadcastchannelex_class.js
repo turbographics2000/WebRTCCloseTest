@@ -84,7 +84,6 @@ class BroadcastChannelEx {
                 case 'joinRes':
                     this.myId = msg.resId
                     this.connectedMembers = msg.connectedMembers
-                    this.options.onMyId(this.myId)
                     break
                 
                 case 'leave':
@@ -112,24 +111,24 @@ class BroadcastChannelEx {
     }
 
     get isHost() {
-        return this._isHost;
+        return this._isHost
     }
 
     set isHost(val) {
         if(!this._isHost && val) {
-            this._isHost = val;
-            this.options.onHost();
+            this._isHost = val
+            this.options.onHost()
         }
     }
 
     get myId() {
-        return this._myId;
+        return this._myId
     }
 
     set myId(val) {
         if(!this._myId && val) {
-            this._myId = val;
-            this.options.onMyId();
+            this._myId = val
+            this.options.onMyId(this._myId)
         }
     }
 
