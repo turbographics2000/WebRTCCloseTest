@@ -100,7 +100,7 @@ function addStreamElement(userId, streamInfo) {
 
     var trackButtonContainer = document.createElement('div');
     trackButtonContainer.id = stream.id + '_trackbutton';
-    stream.getTracks().forEach(track => createTrackButton(sream.id, track.id));
+    stream.getTracks().forEach(track => createTrackButton(stream.id, track.id));
 
     var streamItem = streamInfo.streamItem = document.createElement('div');
     streamItem.classList.add('stream-item');
