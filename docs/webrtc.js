@@ -336,8 +336,9 @@ function createDummyVideoTrack(video, tracks) {
 function renderDummyVideoTrack() {
     renderStreamId = requestAnimationFrame(renderDummyVideoTrack);
     var localStreams = streams[myId];
-    for(var i = localStreams.length; i--;) {
-        var {cnv, ctx, img, left, top, width, height} = localStreams[i];
+    var keys = Object.keys(localStreams);
+    for(var i = keys.length; i--;) {
+        var {cnv, ctx, img, left, top, width, height} = localStreams[keys[i]];
         ctx.fillRect(0, 0, cnv.width, cnv.height);
         ctx.drawImage(img, left, top, width, height);
         var dt = new Date();
