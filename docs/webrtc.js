@@ -7,9 +7,6 @@ let renderStreamId = null;
 let audioContext = new AudioContext();
 let myId = null;
 
-function getMemberStreams(memberId) {
-    return Object.entries(streamInfos).filter(val => val[0] === memberId).map(val => val[1]);
-}
 let signalingChannel = new BroadcastChannel('webrtc-track-and-close-test');
 signalingChannel.send = (msg, toId) => {
     msg = Object.assign(msg, {remoteId: myId, toId});
@@ -96,7 +93,7 @@ function addStreamElement(userId, streamInfo) {
 };
 
 function removeMember(memberId) {
-    var streamInfos = (streams[memberId] || {}).entries().map(val => val[1]);
+    var streamInfos = Object.entries(streams[memberId] || {}).map(val => val[1]);
     var title = document.getElementById('streamstitle_' + memberId);
     var streamContainer = document.getElementById('streams_' + memberId);
     for(var i = streamInfos.length; i--;) {
@@ -251,7 +248,7 @@ function webrtcStart(remoteId) {
     }
 
     if(streams[myId]) {
-        streams[myId].entries().forEach(([key, streamInfo]) => {
+        Object.entries(streams[myId]).forEach(([key, streamInfo]) => {
             addStreamElement(myId, streamInfo);
             addTracks(pc, streamInfo.stream);
         });
@@ -279,7 +276,7 @@ function addTracks(pc, stream) {
 
 function createDummyStream(audio = false, video = true) {
     if(!audio && !video) throw 'createDummyStream argument error';
-    if((streams[myId] || {}).entries().length >= 3) {
+    if(Object.entries(streams[myId] || {}).length >= 3) {
         console.log('limit 3 streams');
         return;
     }
@@ -330,7 +327,7 @@ function createDummyVideoTrack(video, tracks) {
             }, tracks]);
             renderDummyVideoTrack();
         }
-        var no = (streams[myId] || {}).entries().length;
+        var no = Object.entries(streams[myId] || {}).length;
         img.src = `./${myId}/${no}.jpg`;
     });
 }
