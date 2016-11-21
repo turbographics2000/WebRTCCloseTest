@@ -90,12 +90,12 @@ function addStreamElement(userId, streamInfo) {
     streamItem.appendChild(audioMeterContainer);
     streamItem.appendChild(video);
     stream.getTracks().forEach(track => {
-        var track = document.createElement('div');
-        track.textContent = track.id;
-        track.classList.add('track-button');
-        track.onmouseenter = removeTrackOnMouseEnter;
-        track.onmouseleave = removeTrackOnMouseLeave;
-        streamItem.appendChild(track);
+        var removeTrackButton = document.createElement('div');
+        removeTrackButton.textContent = track.id;
+        removeTrackButton.classList.add('track-button');
+        removeTrackButton.onmouseenter = removeTrackOnMouseEnter;
+        removeTrackButton.onmouseleave = removeTrackOnMouseLeave;
+        streamItem.appendChild(removeTrackButton);
     })
     streamContainer.appendChild(streamItem);
     
