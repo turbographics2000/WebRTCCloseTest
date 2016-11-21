@@ -304,7 +304,7 @@ function createDummyVideoTrack(video, tracks) {
     return new Promise((resolve, reject) => {
         let cnv = document.createElement('canvas');
         cnv.style.position = 'absolute';
-        cnv.style.top = -100000;
+        cnv.style.top = '-100000px';
         document.body.appendChild(cnv);
         cnv.width = 320;
         cnv.height = 240;
