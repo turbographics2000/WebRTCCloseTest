@@ -14,7 +14,7 @@ class BroadcastChannelEx {
             onFull: _ => {}
         }, options)
         this.connectedMembers = null
-        this.uuid = UUID.generate({version: 1})
+        this.uuid = new (window.MediaStream || window.webkitMediaStream)().id.replace(/[{}]/g, '');
         this.bc = new BroadcastChannel(this.options.channel)
         this.myId = null
         this._isHost = false

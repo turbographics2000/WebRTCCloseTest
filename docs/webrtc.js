@@ -1,15 +1,16 @@
-let signalingChannel = new BroadcastChannel('webrtc-track-and-close-test');
 const configuration = { "iceServers": [{ "urls": "stun:stun.l.google.com:19302" }] };
 let pcs = {};
-let localStreams = [];
+let streams = {};
 let audioSenders = {};
 let videoSenders = {};
-let dummyStreams = [];
 let renderStreamId = null;
 let audioContext = new AudioContext();
 let myId = null;
-let connectedMembers = null;
 
+function getMemberStreams(memberId) {
+    return Object.entries(streamInfos).filter(val => val[0] === memberId).map(val => val[1]);
+}
+let signalingChannel = new BroadcastChannel('webrtc-track-and-close-test');
 signalingChannel.send = (msg, toId) => {
     msg = Object.assign(msg, {remoteId: myId, toId});
     signalingChannel.postMessage(JSON.stringify(msg));
@@ -42,64 +43,84 @@ function joinRoom() {
     signalingChannel.postMessage(JSON.stringify({join: true, remoteId: idList[0]}));
 }
 
-function createStreamElement(userId, streamInfo) {
+function addStreamElement(userId, streamInfo) {
     var container = document.body;
     var stream = streamInfo.stream;
+
+    streams[userId] = streams[userId] || {};
+    streams[userId][stream.id] = streamInfo;
     
-    var remoteStreamContainer = document.getElementById('streams_' + userId);
-    if(!remoteStreamContainer) {
+    var streamContainer = document.getElementById('streams_' + userId);
+    if(!streamContainer) {
         var title = document.createElement('h3');
-        title.textContent = userId + 'のストリーム'; 
-        remoteStreamContainer = document.createElement('div');
-        remoteStreamContainer.id = 'streams_' + userId;
-        container.appendChild(remoteStreamContainer);
+        title.id = 'streamstitle_' + userId;
+        title.textContent = userId + 'のストリーム';
+        container.appendChild(title);
+        streamContainer = document.createElement('div');
+        streamContainer.id = 'streams_' + userId;
+        container.appendChild(streamContainer);
     }
     
     var audioMeterContainer = document.createElement('div');
     var audioMeter = document.createElement('div');
-    audioMeter.id = stream.id + '_audio';
     audioMeterContainer.appendChild(audioMeter);
 
-    var video = document.createElement('video');
-    video.id = streamInfo.stream.id + '_video';
-    video.srcObject = streamInfo.stream;
+    var video = streamInfo.video = document.createElement('video');
+    video.srcObject = stream;
     video.muted = !!streamInfo.cnv;
     video.controls = true;
     video.play();
-    var streamContainer = document.createElement('div');
-    streamContainer.appendChild(audioMeterContainer);
-    streamContainer.appendChild(video);
-    remoteStreamContainer.appendChild(streamContainer);
+    var streamItem = streamInfo.streamItem = document.createElement('div');
+    streamItem.appendChild(audioMeterContainer);
+    streamItem.appendChild(video);
+    streamContainer.appendChild(streamItem);
     
     var audioTracks = stream.getAudioTracks();
     if(audioTracks.length) {
-        mediaStreamSource = audioContext.createMediaStreamSource(stream);
-        audioProcessor = audioContext.createScriptProcessor(512);
-        audioProcessor.meterId = stream.id + '_audio';
-        audioProcessor.onaudioprocess = function(evt) {
+        streamInfo.mediaStreamSource = audioContext.createMediaStreamSource(stream);
+        streamInfo.audioProcessor = audioContext.createScriptProcessor(512);
+        streamInfo.audioProcessor.audioMeter = audioMeter;
+        streamInfo.audioProcessor.onaudioprocess = function(evt) {
             var buf = evt.inputBuffer.getChannelData(0);
             var maxVal = 0;
             for(var i = buf.length; i--;) {
                 maxVal = Math.max(maxVal, buf[i]);
             }
-            window[this.meterId].style.width = Math.min(~~(maxVal * 100), 100) + '%';
+            this.audioMeter.style.width = Math.min(~~(maxVal * 100), 100) + '%';
         }
-        mediaStreamSource.connect(audioProcessor);
-        audioProcessor.connect(audioContext.destination);
+        streamInfo.mediaStreamSource.connect(audioProcessor);
+        streamInfo.audioProcessor.connect(audioContext.destination);
     } else {
         audioMeter.classList.add('no');
     }
 };
 
-function removeVideo(stream) {
-    var video = document.getElementById(stream.id);
-    if(!video) return;
-    stream.getTracks().forEach(track => {
-        track.stop();
-    });
-    video.srcObject = null;
-    video.parentElement.removeChild(video);
-    video = null;
+function removeMember(memberId) {
+    var streamInfos = (streams[memberId] || {}).entries().map(val => val[1]);
+    var title = document.getElementById('streamstitle_' + memberId);
+    var streamContainer = document.getElementById('streams_' + memberId);
+    for(var i = streamInfos.length; i--;) {
+        removeStream(streamInfos[i]);
+        delete streams[memberId][streamInfo.stream.id];
+    }
+    title.parentElement.removeChild(title);
+    streamContainer.parentElement.removeChild(streamContainer);
+    delete streams[memberId];
+}
+
+function removeStream(streamInfo) {
+    if(streamInfo.mediaStreamSource) {
+        streamInfo.audioProcessor.disconnect();
+        streamInfo.mediaStreamSource.disconnect();
+        delete streamInfo.audioProcessor.audioMeter;
+        delete streamInfo.audioProcessor;
+        delete streamInfo.mediaStreamSource;
+    }
+    streamInfo.stream.getTracks().forEach(track => track.stop());
+    streamInfo.video.srcObject = null;
+    delete streamInfo.video;
+    streamContainer.removeChild(streamInfo.streamItem);
+    delete streamInfo.streamItem;
 }
 
 // function addStream() {
@@ -220,24 +241,23 @@ function webrtcStart(remoteId) {
     if('ontrack' in pc) {
         pc.ontrack = function(evt) {
             if(evt.track.kind === 'video') {
-                createStreamElement(remoteId, {stream: evt.streams[0]});
+                addStreamElement(remoteId, {stream: evt.streams[0]});
             }
         };
     } else {
         pc.onaddstream = function(evt) {
-            createStreamElement(remoteId, {stream: evt.stream});
+            addStreamElement(this.remoteId, {stream: evt.stream});
         }
     }
 
-
-    if(localStreams.length) {
-        localStreams.forEach(streamInfo => {
-            createStreamElement(myId, streamInfo);
+    if(streams[myid]) {
+        streams[myId].entries().forEach(([key, streamInfo]) => {
+            addStreamElement(myId, streamInfo);
             addTracks(pc, streamInfo.stream);
         });
     } else {
         createDummyStream(true, true).then(streamInfo => {
-            createStreamElement(myId, streamInfo);
+            addStreamElement(myId, streamInfo);
             addTracks(pc, streamInfo.stream);
         });
     }
@@ -259,7 +279,7 @@ function addTracks(pc, stream) {
 
 function createDummyStream(audio = false, video = true) {
     if(!audio && !video) throw 'createDummyStream argument error';
-    if(localStreams.length >= 3) {
+    if((streams[myid] || {}).entries().length >= 3) {
         console.log('limit 3 streams');
         return;
     }
@@ -267,7 +287,6 @@ function createDummyStream(audio = false, video = true) {
         .then(tracks => createDummyVideoTrack(video, tracks))
         .then(([streamInfo, tracks]) => {
             streamInfo.stream = new (window.MediaStream || window.webkitMediaStream)(tracks);
-            localStreams.push(streamInfo);
             return streamInfo;
         });
 }
@@ -296,12 +315,10 @@ function createDummyVideoTrack(video, tracks) {
         ctx.strokStyle = 'black'
         ctx.fillStyle = 'white';
         ctx.textAlign = 'right';
-        //ctx.textBaseline = 'middle';
         let img = new Image();
         img.onload = function() {
             var ratio = Math.min(cnv.width / img.naturalWidth, cnv.height / img.naturalHeight);
-            var stream = cnv.captureStream(); 
-            tracks.push(stream.getVideoTracks()[0]);
+            tracks.push(cnv.captureStream().getVideoTracks()[0]);
             resolve([{
                 cnv: cnv,
                 ctx: ctx,
@@ -313,12 +330,14 @@ function createDummyVideoTrack(video, tracks) {
             }, tracks]);
             renderDummyVideoTrack();
         }
-        img.src = `./${myId}/${localStreams.length}.jpg`;
+        var no = (streams[myId] || {}).entries().length;
+        img.src = `./${myId}/${no}.jpg`;
     });
 }
 
 function renderDummyVideoTrack() {
     renderStreamId = requestAnimationFrame(renderDummyVideoTrack);
+    var localStreams = streams[myId];
     for(var i = localStreams.length; i--;) {
         var {cnv, ctx, img, left, top, width, height} = localStreams[i];
         ctx.fillRect(0, 0, cnv.width, cnv.height);
