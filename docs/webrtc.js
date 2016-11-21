@@ -85,7 +85,7 @@ function addStreamElement(userId, streamInfo) {
             }
             this.audioMeter.style.width = Math.min(~~(maxVal * 100), 100) + '%';
         }
-        streamInfo.mediaStreamSource.connect(audioProcessor);
+        streamInfo.mediaStreamSource.connect(streamInfo.audioProcessor);
         streamInfo.audioProcessor.connect(audioContext.destination);
     } else {
         audioMeter.classList.add('no');
