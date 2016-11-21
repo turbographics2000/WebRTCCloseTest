@@ -30,7 +30,9 @@ addStream.onclick = function() {
 addAudioTrack.onclick = function() {
     createDummyAundioTrack().then(([track]) => {
         var localStreams = Object.entries(streams[myId]).map(val => val[1].stream);
-        trackSenders[track.id] = pcs[myId].addTrack(track, localStreams);
+        for(let remoteId in pcs) {
+            trackSenders[track.id] = pcs[remoteId].addTrack(track, localStreams);
+        }
     })
 }
 
