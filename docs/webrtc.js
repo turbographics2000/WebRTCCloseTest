@@ -52,7 +52,7 @@ function joinRoom() {
 
 function addStreamElement(userId, streamInfo) {
     console.log('addStreamElement', userId, streamInfo);
-    var container = document.body;
+    //var container = document.body;
     var stream = streamInfo.stream;
 
     stream.onremovetrack = function(evt) {

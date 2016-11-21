@@ -1,3 +1,7 @@
+#container {
+    width: 800px;
+    margin: auto;
+}
 .streams {
     overflow: hidden;
 }
