@@ -90,11 +90,15 @@ function addStreamElement(userId, streamInfo) {
         var title = document.createElement('h3');
         title.id = 'streamstitle_' + userId;
         title.textContent = (userId === myId ? '自分' : userId) + 'のストリーム';
-        container.appendChild(title);
         streamContainer = document.createElement('div');
         streamContainer.id = 'streams_' + userId;
         streamContainer.classList.add('streams');
-        container.appendChild(streamContainer);
+        streamContainer.appendChild(title);
+        if(userId === myId) {
+            container.insertBefore(streamContainer, container.firstChild);
+        } else {
+            container.appendChild(streamContainer);
+        }
     }
 
     var streamIdLabel = document.createElement('div');
@@ -403,6 +407,7 @@ function createDummyVideoTrack(flg, tracks) {
     if(!flg) return Promise.resolve([{}, tracks]);
     return new Promise((resolve, reject) => {
         let cnv = document.createElement('canvas');
+        cnv.style.backgroundColor = 'black';
         cnv.style.position = 'absolute';
         cnv.style.top = '-100000px';
         document.body.appendChild(cnv);
