@@ -256,6 +256,7 @@ function webrtcStart(remoteId) {
         createDummyStream(true, true).then(streamInfo => {
             addStreamElement(myId, streamInfo);
             addTracks(pc, streamInfo.stream);
+            if(!renderStreamId) renderDummyVideoTrack();
         });
     }
 }
@@ -325,7 +326,6 @@ function createDummyVideoTrack(video, tracks) {
                 width: img.naturalWidth * ratio,
                 height: img.naturalHeight * ratio,
             }, tracks]);
-            renderDummyVideoTrack();
         }
         var no = Object.entries(streams[myId] || {}).length;
         img.src = `./${myId}/${no}.jpg`;
