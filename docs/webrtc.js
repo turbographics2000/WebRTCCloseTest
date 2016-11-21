@@ -8,6 +8,8 @@ let renderStreamId = null;
 let audioContext = new AudioContext();
 let myId = null;
 
+window.RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection;
+
 
 let signalingChannel = new BroadcastChannel('webrtc-track-and-close-test');
 signalingChannel.send = (msg, toId) => {
@@ -26,7 +28,6 @@ addStream.onclick = function() {
 };
 
 
-window.RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection;
 
 // if(btnRemoveTrack) {
 //     btnRemoveTrack.onclick = function () {
@@ -53,6 +54,10 @@ function addStreamElement(userId, streamInfo) {
     console.log('addStreamElement', userId, streamInfo);
     var container = document.body;
     var stream = streamInfo.stream;
+
+    stream.onremovetrack = function(evt) {
+        console.log('onremovetrack', evt.track.id);
+    }
 
     if(streams[userId] && streams[userId][stream.id]) return;
 
@@ -84,6 +89,14 @@ function addStreamElement(userId, streamInfo) {
     streamItem.classList.add('stream-item');
     streamItem.appendChild(audioMeterContainer);
     streamItem.appendChild(video);
+    stream.getTracks().forEach(track => {
+        var track = document.createElement('div');
+        track.textContent = track.id;
+        track.classList.add('track-button');
+        track.onmouseenter = removeTrackOnMouseEnter;
+        track.onmouseleave = removeTrackOnMouseLeave;
+        streamItem.appendChild(track);
+    })
     streamContainer.appendChild(streamItem);
     
     var audioTracks = stream.getAudioTracks();
@@ -140,6 +153,28 @@ function removeStream(streamInfo) {
     delete streamInfo.video;
     streamInfo.streamItem.parentElement.removeChild(streamInfo.streamItem);
     delete streamInfo.streamItem;
+}
+
+function removeTrackOnMouseEnter() {
+    var trackId = this.dataset.trackId;
+    Array.from(document.getElementsByClassName('track-button'))
+        .filter(elm => elm.dataset.trackId === trackId)
+        .forEach(elm => {
+            if(!elm.classList.contains('hover')) {
+                elm.classList.toggle('hover');
+            }
+        });
+}
+
+function removeTrackOnMouseLeave() {
+    var trackId = this.dataset.trackId;
+    Array.from(document.getElementsByClassName('track-button'))
+        .filter(elm => elm.dataset.trackId === trackId)
+        .forEach(elm => {
+            if(elm.classList.contains('hover')) {
+                elm.classList.remove('hover');
+            }
+        });
 }
 
 // function addStream() {
@@ -366,7 +401,7 @@ function renderDummyVideoTrack() {
     var keys = Object.keys(localStreams);
     for(var i = keys.length; i--;) {
         var {cnv, ctx, img, left, top, width, height} = localStreams[keys[i]];
-        ctx.fillRect(0, 0, cnv.width, cnv.height);
+        ctx.clearRect(0, 0, cnv.width, cnv.height);
         ctx.drawImage(img, left, top, width, height);
         var dt = new Date();
         var dtStr = [dt.getHours(), dt.getMinutes(), dt.getSeconds()].map(v => ('0' + v).slice(-2)).join(':');

@@ -6,3 +6,13 @@
     float: left;
     margin-right: 10px;
 }
+
+.track-button {
+    font-size: 10px;
+    transition: background-color 100ms linear, transform 100ms linear;
+}
+
+.track-button.hover {
+    transform: scale(1.2, 1.2, 1);
+    background-color: #2299ee;
+}
