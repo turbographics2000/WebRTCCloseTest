@@ -113,11 +113,10 @@ function removeStream(streamInfo) {
         delete streamInfo.audioProcessor;
         delete streamInfo.mediaStreamSource;
     }
-    var streamContainer = document.getElementById('streams_' + memberId);
     streamInfo.stream.getTracks().forEach(track => track.stop());
     streamInfo.video.srcObject = null;
     delete streamInfo.video;
-    streamContainer.removeChild(streamInfo.streamItem);
+    streamInfo.streamItem.parentElement.removeChild(streamInfo.streamItem);
     delete streamInfo.streamItem;
 }
 
