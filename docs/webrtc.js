@@ -73,11 +73,11 @@ function addStreamElement(userId, streamInfo) {
     var stream = streamInfo.stream;
 
     stream.onaddtrack = function(evt) {
-        console.log('onaddtrack', evt.track.id);
+        console.log('onaddtrack', 'streamId:' + this.id, 'trackId:' + evt.track.id);
         createTrackButton(this.id, evt.track.id);
     }
     stream.onremovetrack = function(evt) {
-        console.log('onremovetrack', evt.track.id);
+        console.log('onremovetrack', 'streamId:' + this.id, 'trackId:' + evt.track.id);
     }
 
     if(streams[userId] && streams[userId][stream.id]) return;
