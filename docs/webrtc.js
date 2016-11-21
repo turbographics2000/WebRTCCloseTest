@@ -27,6 +27,12 @@ addStream.onclick = function() {
     });
 };
 
+addAudioTrack.onclick = function() {
+    createDummyAundioTrack().then(([track]) => {
+        var localStreams = Object.entries(streams[myId]).map(val => val[1].stream);
+        trackSenders[track.id] = pcs[myId].addTrack(track, localStreams);
+    })
+}
 
 
 // if(btnRemoveTrack) {
@@ -349,7 +355,7 @@ function createDummyStream(audio = false, video = true) {
         });
 }
 
-function createDummyAundioTrack(flg) {
+function createDummyAundioTrack(flg = true) {
     console.log('createDummyAudioTrack', flg);
     if(!flg) return Promise.resolve([]);
     return new Promise((resolve, reject) => {
@@ -361,9 +367,9 @@ function createDummyAundioTrack(flg) {
     });
 }
 
-function createDummyVideoTrack(video, tracks) {
+function createDummyVideoTrack(flg, tracks) {
     console.log('createDummyVideoTrack', video, tracks);
-    if(!video) return Promise.resolve([{}, tracks]);
+    if(!flg) return Promise.resolve([{}, tracks]);
     return new Promise((resolve, reject) => {
         let cnv = document.createElement('canvas');
         cnv.style.position = 'absolute';
