@@ -264,6 +264,7 @@ function webrtcStart(remoteId) {
     }
 
     if(streams[myId]) {
+        pc.onnegotiationneeded();
         Object.entries(streams[myId]).forEach(([key, streamInfo]) => {
             //addStreamElement(myId, streamInfo);
             //addTracks(pc, streamInfo.stream);
