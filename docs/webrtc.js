@@ -98,7 +98,7 @@ function removeMember(memberId) {
     var streamContainer = document.getElementById('streams_' + memberId);
     for(var i = streamInfos.length; i--;) {
         removeStream(streamInfos[i]);
-        delete streams[memberId][streamInfo.stream.id];
+        delete streams[memberId][streamInfos[i].stream.id];
     }
     title.parentElement.removeChild(title);
     streamContainer.parentElement.removeChild(streamContainer);
