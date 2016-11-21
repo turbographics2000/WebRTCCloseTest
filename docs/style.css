@@ -1,9 +1,11 @@
 #container {
-    width: 800px;
+    width: 1200px;
     margin: auto;
+    padding: 30px;
 }
 .streams {
     overflow: hidden;
+    padding: 30px;
 }
 
 .stream-item {
