@@ -8,6 +8,7 @@ let renderStreamId = null;
 let audioContext = new AudioContext();
 let myId = null;
 
+
 let signalingChannel = new BroadcastChannel('webrtc-track-and-close-test');
 signalingChannel.send = (msg, toId) => {
     msg = Object.assign(msg, {remoteId: myId, toId});
@@ -169,14 +170,15 @@ function removeStream(streamInfo) {
 // }
 
 signalingChannel.onmessage = function(evt) {
-    console.log('signalingChannel.onmessage', evt);
     let msg = JSON.parse(evt.data);
+    console.log('signalingChannel.onmessage', msg.toId);
     if('toId' in msg && msg.toId !== myId) return;
     if (msg.desc) {
         if (!pcs[msg.remoteId]) webrtcStart(msg.remoteId);
         let pc = pcs[msg.remoteId];
         let desc = msg.desc;
         if (desc.type === 'offer') {
+            console.log('receive offer', msg.remoteId, desc);
             pc.setRemoteDescription(new RTCSessionDescription(desc))
                 .then(_ =>{
                     return pc.createAnswer();
@@ -191,6 +193,7 @@ signalingChannel.onmessage = function(evt) {
                     console.log(error.name + ": " + error.message);
                 });
         } else if (desc.type === 'answer') {
+            console.log('recevie answer', msg.remoteId, desc);
             pc.setRemoteDescription(new RTCSessionDescription(desc))
                 .catch(error => {
                     console.log(error.name + ": " + error.message);
@@ -209,6 +212,7 @@ signalingChannel.onmessage = function(evt) {
         } else
             console.log("Unsupported SDP type. Your code may differ here.");
     } else {
+        console.log('receve candidate', msg.remoteId, msg.candidate);
         pcs[msg.remoteId].addIceCandidate(new RTCIceCandidate(msg.candidate))
             .catch(error => {
                 console.log(error.name + ": " + error.message);
@@ -222,6 +226,7 @@ function webrtcStart(remoteId) {
     pc.remoteId = remoteId;
 
     pc.onicecandidate = evt => {
+        console.log('onicecandidate', evt.candidate);
         if(evt.candidate) {
             signalingChannel.send({candidate: evt.candidate}, remoteId);
         }
