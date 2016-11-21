@@ -315,7 +315,7 @@ function webrtcStart(remoteId) {
             addTracks(pc, streamInfo.stream);
         });
     } else {
-        createDummyStream(true, true).then(streamInfo => {
+        createDummyStream(false, true).then(streamInfo => {
             addStreamElement(myId, streamInfo);
             addTracks(pc, streamInfo.stream);
             if(!renderStreamId) renderDummyVideoTrack();
