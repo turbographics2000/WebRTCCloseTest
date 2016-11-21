@@ -38,10 +38,12 @@ window.RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConne
 // }
 
 function joinRoom() {
+    console.log('joinRoom');
     signalingChannel.postMessage(JSON.stringify({join: true, remoteId: idList[0]}));
 }
 
 function addStreamElement(userId, streamInfo) {
+    console.log('addStreamElement', userId, streamInfo);
     var container = document.body;
     var stream = streamInfo.stream;
 
@@ -94,6 +96,7 @@ function addStreamElement(userId, streamInfo) {
 };
 
 function removeMember(memberId) {
+    console.log('removeMebmer', memberId);
     var streamInfos = Object.entries(streams[memberId] || {}).map(val => val[1]);
     var title = document.getElementById('streamstitle_' + memberId);
     var streamContainer = document.getElementById('streams_' + memberId);
@@ -109,6 +112,7 @@ function removeMember(memberId) {
 }
 
 function removeStream(streamInfo) {
+    console.log('removeStream', streamInfo);
     streamInfo.audioProcessor.onaudioprocess = null;
     streamInfo.stream.getTracks().forEach(track => {
         delete trackSenders[track.id];
@@ -165,6 +169,7 @@ function removeStream(streamInfo) {
 // }
 
 signalingChannel.onmessage = function(evt) {
+    console.log('signalingChannel.onmessage', evt);
     let msg = JSON.parse(evt.data);
     if('toId' in msg && msg.toId !== myId) return;
     if (msg.desc) {
@@ -268,6 +273,7 @@ function webrtcStart(remoteId) {
 }
 
 function addTracks(pc, stream) {
+    console.log('addTracks', pc, stream);
     if(pc.addTrack) {
         stream.getTracks().forEach(track => {
             trackSenders[track.id] = pc.addTrack(track, stream);
@@ -278,6 +284,7 @@ function addTracks(pc, stream) {
 }
 
 function createDummyStream(audio = false, video = true) {
+    console.log('createDummyStream', audio, video);
     if(!audio && !video) throw 'createDummyStream argument error';
     if(Object.entries(streams[myId] || {}).length >= 3) {
         console.log('limit 3 streams');
@@ -292,6 +299,7 @@ function createDummyStream(audio = false, video = true) {
 }
 
 function createDummyAundioTrack(flg) {
+    console.log('createDummyAudioTrack', flg);
     if(!flg) return Promise.resolve([]);
     return new Promise((resolve, reject) => {
         let oscillator = audioContext.createOscillator();
@@ -303,6 +311,7 @@ function createDummyAundioTrack(flg) {
 }
 
 function createDummyVideoTrack(video, tracks) {
+    console.log('createDummyVideoTrack', video, tracks);
     if(!video) return Promise.resolve([{}, tracks]);
     return new Promise((resolve, reject) => {
         let cnv = document.createElement('canvas');

@@ -16,20 +16,25 @@
         <script>
             let bcex = new BroadcastChannelEx({
                 onMyId: id => {
+                    console.log('onMyId', id);
                     myId = id;
                     dispMyId.textContent = '自分のID:' + id
                 },
                 onJoinMember: (memberId, members) => {
+                    console.log('onJoinMember', memberId, members, connectedMemmbers);
                     connectedMembers = members
                     webrtcStart(memberId)
                 },
                 onLeaveMember: memberId => {
+                    console.log('onLeaveMember', memberId);
                     removeMember(memberId);
                 },
                 onHost: _ => {
+                    console.log('onHost');
                     document.title = '★' + document.title
                 },
                 onFull: _ => {
+                    console.log('onFull');
                     disMyId.textContent = '満員'
                 }
             })
