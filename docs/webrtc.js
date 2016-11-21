@@ -250,8 +250,8 @@ function webrtcStart(remoteId) {
 
     if(streams[myId]) {
         Object.entries(streams[myId]).forEach(([key, streamInfo]) => {
-            addStreamElement(myId, streamInfo);
-            addTracks(pc, streamInfo.stream);
+            //addStreamElement(myId, streamInfo);
+            //addTracks(pc, streamInfo.stream);
         });
     } else {
         createDummyStream(true, true).then(streamInfo => {
