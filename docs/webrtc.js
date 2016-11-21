@@ -107,11 +107,11 @@ function removeMember(memberId) {
 
 function removeStream(streamInfo) {
     if(streamInfo.mediaStreamSource) {
-        streamInfo.audioProcessor.disconnect();
         streamInfo.mediaStreamSource.disconnect();
+        streamInfo.audioProcessor.disconnect();
         delete streamInfo.audioProcessor.audioMeter;
-        delete streamInfo.audioProcessor;
         delete streamInfo.mediaStreamSource;
+        delete streamInfo.audioProcessor;
     }
     streamInfo.stream.getTracks().forEach(track => track.stop());
     streamInfo.video.srcObject = null;
