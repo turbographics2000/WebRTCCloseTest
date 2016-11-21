@@ -48,6 +48,8 @@ function addStreamElement(userId, streamInfo) {
     var container = document.body;
     var stream = streamInfo.stream;
 
+    if(streams[userId] && streams[userId][stream.id]) return;
+
     streams[userId] = streams[userId] || {};
     streams[userId][stream.id] = streamInfo;
     
@@ -55,7 +57,7 @@ function addStreamElement(userId, streamInfo) {
     if(!streamContainer) {
         var title = document.createElement('h3');
         title.id = 'streamstitle_' + userId;
-        title.textContent = userId + 'のストリーム';
+        title.textContent = (userId === myId ? '自分' : userId) + 'のストリーム';
         container.appendChild(title);
         streamContainer = document.createElement('div');
         streamContainer.id = 'streams_' + userId;
@@ -264,10 +266,9 @@ function webrtcStart(remoteId) {
     }
 
     if(streams[myId]) {
-        pc.onnegotiationneeded();
         Object.entries(streams[myId]).forEach(([key, streamInfo]) => {
-            //addStreamElement(myId, streamInfo);
-            //addTracks(pc, streamInfo.stream);
+            addStreamElement(myId, streamInfo);
+            addTracks(pc, streamInfo.stream);
         });
     } else {
         createDummyStream(true, true).then(streamInfo => {
