@@ -1,8 +1,9 @@
 const configuration = { "iceServers": [{ "urls": "stun:stun.l.google.com:19302" }] };
 let pcs = {};
 let streams = {};
-let audioSenders = {};
-let videoSenders = {};
+//let audioSenders = {};
+//let videoSenders = {};
+let trackSenders = {};
 let renderStreamId = null;
 let audioContext = new AudioContext();
 let myId = null;
@@ -103,11 +104,16 @@ function removeMember(memberId) {
     title.parentElement.removeChild(title);
     streamContainer.parentElement.removeChild(streamContainer);
     delete streams[memberId];
+    pcs[memberId].close();
+    delete pcs[memberId];
 }
 
 function removeStream(streamInfo) {
     streamInfo.audioProcessor.onaudioprocess = null;
-    streamInfo.stream.getTracks().forEach(track => track.stop());
+    streamInfo.stream.getTracks().forEach(track => {
+        delete trackSenders[track.id];
+        track.stop();
+    });
     if(streamInfo.mediaStreamSource) {
         streamInfo.mediaStreamSource.disconnect();
         streamInfo.audioProcessor.disconnect();
@@ -228,7 +234,7 @@ function webrtcStart(remoteId) {
     
     pc.oniceconnectionstatechange = function(evt) {
         console.log('oniceconnectionstatechange', pc.iceConnectionState);
-        if(pc.iceConnectionState === 'closed') {
+        if(pc.iceConnectionState === 'disconnected') {
             delete pcs[this.remoteId];
         }
     }
@@ -264,11 +270,7 @@ function webrtcStart(remoteId) {
 function addTracks(pc, stream) {
     if(pc.addTrack) {
         stream.getTracks().forEach(track => {
-            if(track.kind === 'audio') {
-                audioSenders.add(pc.addTrack(track, stream));
-            } else if(track.kind === 'video') {
-                videoSenders.add(pc.addTrack(track, stream));
-            }
+            trackSenders[track.id] = pc.addTrack(track, stream);
         });
     } else {
         pc.addStream(stream);
