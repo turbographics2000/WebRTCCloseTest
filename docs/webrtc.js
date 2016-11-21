@@ -74,6 +74,7 @@ function addStreamElement(userId, streamInfo) {
     video.controls = true;
     video.play();
     var streamItem = streamInfo.streamItem = document.createElement('div');
+    streamItem.classList.add('stream-item');
     streamItem.appendChild(audioMeterContainer);
     streamItem.appendChild(video);
     streamContainer.appendChild(streamItem);
