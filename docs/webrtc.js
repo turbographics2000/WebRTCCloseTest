@@ -253,7 +253,7 @@ function webrtcStart(remoteId) {
     pc.oniceconnectionstatechange = function(evt) {
         console.log('oniceconnectionstatechange', pc.iceConnectionState);
         if(['closed', 'failed'].includes(pc.iceConnectionState)) {
-            removeMember(this.remoteId);
+            if(pcs[this.remoteId]) removeMember(this.remoteId);
         }
     }
 
