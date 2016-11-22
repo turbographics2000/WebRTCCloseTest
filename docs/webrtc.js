@@ -161,12 +161,12 @@ function addStreamElement(userId, streamInfo) {
             var buf = evt.inputBuffer.getChannelData(0);
             var bufLength = buf.length;
             var sum = 0;
-            for(var i = bufLength; i--;) {
+            for(var i = 0; i < bufLength; i++) {
                 sum += buf[i] * buf[i];
             }
             var rms = Math.sqrt(sum / bufLength);;
             this.volume = Math.max(rms, this.volume * this.averaging);
-            this.audioMeter.style.width = this.volume * 1.4 + '%';
+            this.audioMeter.style.width = ~~(this.volume * 100) + '%';
         }
         streamInfo.mediaStreamSource.connect(streamInfo.audioProcessor);
         streamInfo.audioProcessor.connect(audioContext.destination);
@@ -407,7 +407,7 @@ function createVideoFileStream(file) {
     video.height = 240;
     var srcURL = URL.createObjectURL(file);
     video.src = srcURL;
-    video.oncanplay = function() {
+    video.onloadedmetadata = function() { // oncanplayだと複数回イベントが発生してしまうためonloadedmetadataに変更
         var src = audioContext.createMediaElementSource(video);
         var dst = src.connect(audioContext.createMediaStreamDestination());
         video.play();
