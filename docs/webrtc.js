@@ -165,8 +165,8 @@ function addStreamElement(userId, streamInfo) {
                 sum += buf[i] * buf[i];
             }
             var rms = Math.sqrt(sum / bufLength);;
-            this.volume = Math.max(rms, this.volume*this.averaging);
-            this.audioMeter.style.width = this.volume + '%';
+            this.volume = Math.max(rms, this.volume * this.averaging);
+            this.audioMeter.style.width = this.volume * 1.4 + '%';
         }
         streamInfo.mediaStreamSource.connect(streamInfo.audioProcessor);
         streamInfo.audioProcessor.connect(audioContext.destination);
