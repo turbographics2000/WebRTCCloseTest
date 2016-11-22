@@ -408,15 +408,16 @@ function createVideoFileStream(file) {
         var audioTrack = dst.stream.getAudioTracks()[0];
         var videoTrack = cnv.captureStream().getVideoTracks()[0];
         var stream = new MediaStream([audioTrack, videoTrack]);
+        var ratio = Math.min(cnv.width / video.videoWidth, cnv.height / video.videoHeight);
         streams[myId][stream.id] = {
             cnv: cnv,
             ctx: ctx,
             media: video,
             srcURL: srcURL,
-            left: 0,
-            top: 0,
-            width: 320,
-            height: 240,
+            left: (cnv.width - (video.videoWidth * ratio)) / 2,
+            top: (cnv.height - (video.videoHeight * ratio)) / 2,
+            width: video.videoWidth * ratio,
+            height: video.videoHeight * ratio,
             stream: stream
         };
         var remoteIds = Object.keys(pcs);
