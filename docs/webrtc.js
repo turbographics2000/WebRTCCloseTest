@@ -156,7 +156,7 @@ function addStreamElement(userId, streamInfo) {
         processor.clipping = false;
         processor.lastClip = 0;
         processor.volume = 0;
-        processor.averaging = 0.95;
+        processor.averaging = 1;
         streamInfo.audioProcessor.onaudioprocess = function(evt) {
             var buf = evt.inputBuffer.getChannelData(0);
             var bufLength = buf.length;
@@ -166,7 +166,7 @@ function addStreamElement(userId, streamInfo) {
             }
             var rms = Math.sqrt(sum / bufLength);;
             this.volume = Math.max(rms, this.volume * this.averaging);
-            this.audioMeter.style.width = ~~(this.volume * 140) + '%';
+            this.audioMeter.style.width = ~~(this.volume * 150) + '%';
         }
         streamInfo.mediaStreamSource.connect(streamInfo.audioProcessor);
         streamInfo.audioProcessor.connect(audioContext.destination);
