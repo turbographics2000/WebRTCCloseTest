@@ -151,8 +151,14 @@ function addStreamElement(userId, streamInfo) {
     var audioTracks = stream.getAudioTracks();
     if(audioTracks.length) {
         streamInfo.mediaStreamSource = audioContext.createMediaStreamSource(stream);
-        streamInfo.audioProcessor = audioContext.createScriptProcessor(512);
-        streamInfo.audioProcessor.audioMeter = audioMeter;
+        var processor = streamInfo.audioProcessor = audioContext.createScriptProcessor(512);
+        processor.audioMeter = audioMeter;
+        processor.clipping = false;
+        processor.lastClip = 0;
+        processor.volume = 0;
+        processor.clipLevel = 0.98;
+        processor.averaging = 0.95;
+        processor.clipLag = clipLag || 750;
         streamInfo.audioProcessor.onaudioprocess = function(evt) {
             var buf = evt.inputBuffer.getChannelData(0);
             var bufLength = bug.length;
@@ -160,8 +166,9 @@ function addStreamElement(userId, streamInfo) {
             for(var i = bufLength; i--;) {
                 sum += buf[i] * buf[i];
             }
-            //this.audioMeter.style.width = Math.min(~~(maxVal * 100), 100) + '%';
-            this.audioMeter.style.width = Math.sqrt(sum / bufLength) + '%';
+            var rms = Math.sqrt(sum / bufLength);;
+            this.volume = Math.max(rms, this.volume*this.averaging);
+            this.audioMeter.style.width = this.volume + '%';
         }
         streamInfo.mediaStreamSource.connect(streamInfo.audioProcessor);
         streamInfo.audioProcessor.connect(audioContext.destination);
