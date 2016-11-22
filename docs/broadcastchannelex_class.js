@@ -76,7 +76,6 @@ class BroadcastChannelEx {
                             connectedMembers: this.connectedMembers
                         })
                         this.isHost = true
-                        this.options.onMyId(this.myId)
                         //this.options.onJoinMember(resId)
                     }
                     break
@@ -84,7 +83,6 @@ class BroadcastChannelEx {
                 case 'joinRes':
                     this.myId = msg.resId
                     this.connectedMembers = msg.connectedMembers
-                    this.options.onMyId(this.myId)
                     this.options.onJoinMember(this.connectedMembers);
                     break
                 
