@@ -286,7 +286,7 @@ signalingChannel.onmessage = function(evt) {
             if(!streams[myId]) {
                 createDummyStream(false, true).then(streamInfo => {
                     addStreamElement(myId, streamInfo);
-                    addTracks(pcs[memberIds[0]], streamInfo.stream);
+                    addTracks(pcs[msg.remoteId], streamInfo.stream);
                     if(!renderStreamId) renderDummyVideoTrack();
                 });
             }
