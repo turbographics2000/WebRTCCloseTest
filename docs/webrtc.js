@@ -583,9 +583,6 @@ function renderDummyVideoTrack() {
 var logs = [];
 var logTypes = ['WebRTC'];
 var logSubTypes = ['event', 'function'];
-bcex.on('log', logData => {
-    logs.push(logData);
-});
 
 function log(type, subType, msg, arg, arg2, arg3) {
     if(logTypes.includes(type) && logSubTypes.includes(subType)) {
