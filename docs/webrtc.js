@@ -418,6 +418,7 @@ function createVideoFileStream(file) {
         for(var remoteId in pcs) {
             addTracks(pcs[remoteId], stream);
         }
+        if(!renderStreamId) renderDummyVideoTrack();
     }
 }
 
