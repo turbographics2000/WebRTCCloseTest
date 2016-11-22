@@ -281,7 +281,16 @@ signalingChannel.onmessage = function(evt) {
     console.log('signalingChannel.onmessage', msg.toId);
     if('toId' in msg && msg.toId !== myId) return;
     if (msg.desc) {
-        if (!pcs[msg.remoteId]) webrtcStart(msg.remoteId);
+        if (!pcs[msg.remoteId]) {
+            webrtcStart(msg.remoteId);
+            if(!streams[myId]) {
+                createDummyStream(false, true).then(streamInfo => {
+                    addStreamElement(myId, streamInfo);
+                    addTracks(pcs[memberIds[0]], streamInfo.stream);
+                    if(!renderStreamId) renderDummyVideoTrack();
+                });
+            }
+        }
         let pc = pcs[msg.remoteId];
         pc.remoteId = msg.remoteId;
         let desc = msg.desc;
