@@ -170,6 +170,7 @@ class BroadcastChannelEx {
     }
 
     on(eventName, eventHandler) {
+        this[eventHandlers] = this[eventHandlers] || {}
         this[eventHandlers][eventName] = this[eventHandlers][eventName] || []
         this[eventHandlers][eventName].push(eventHandler)
     }
