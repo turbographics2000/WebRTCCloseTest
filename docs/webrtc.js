@@ -197,6 +197,7 @@ function removeMember(memberId) {
 
 function removeStream(streamInfo) {
     console.log('removeStream', streamInfo);
+    if(streamInfo.srcURL) URL.revokeObjectURL(streamInfo.srcURL);
     streamInfo.stream.getTracks().forEach(track => {
         delete trackSenders[track.id];
         track.stop();
@@ -395,7 +396,8 @@ function addTracks(pc, stream) {
 
 function createVideoFileStream(file) {
     var video = document.createElement('video');
-    video.src = file;
+    var srcURL = URL.createObjectURL(file);
+    video.src = srcURL;
     video.oncanplay = function() {
         var src = audioContext.createMediaElementSource(video);
         var dst = src.connect(audioContext.createMediaStreamDestination());
@@ -408,6 +410,7 @@ function createVideoFileStream(file) {
             cnv: cnv,
             ctx: ctx,
             media: video,
+            srcURL: srcURL,
             left: (cnv.width - (img.naturalWidth * ratio)) / 2,
             top: (cnv.height - (img.naturalHeight * ratio)) / 2,
             width: img.naturalWidth * ratio,
