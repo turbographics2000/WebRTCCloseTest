@@ -39,6 +39,9 @@ html, body {
     height: 100%;
     background: #228899;
 }
+.audio-meter.no{
+    background: #992222;
+}
 
 .track-button {
     font-family: monospace;
