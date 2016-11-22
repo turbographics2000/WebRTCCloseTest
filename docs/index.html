@@ -32,6 +32,17 @@
                     for(var i = 0; i < memberIds.length; i++) {
                         webrtcStart(memberIds[i]);
                     }
+                    createDummyStream(false, true).then(streamInfo => {
+                        addStreamElement(myId, streamInfo);
+                        addTracks(pc[memberIds[0]], streamInfo.stream);
+                        if(!renderStreamId) renderDummyVideoTrack();
+                        return streamInfo;
+                    }).then(streamInfo => {
+                        for(var i = 1; i < memberIds.length; i++) {
+                            addStreamElement(myId, streamInfo);
+                            addTracks(pc, streamInfo.stream);
+                        }
+                    });
                 },
                 onLeaveMember: memberId => {
                     console.log('onLeaveMember', memberId);
