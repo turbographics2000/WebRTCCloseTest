@@ -34,7 +34,7 @@ document.body.ondragover = function(evt) {
 document.body.ondrop = function(evt) {
     var video = document.createElement('video');
     evt.preventDefault();
-    let files = evt.dataTransfer.files;
+    let files = Array.from(evt.dataTransfer.files);
     var streamCnt = Object.keys(streams[myId]).length;
     var addMaxCnt = 3 - streamCnt;
     var playableFiles = files.filter(file => ['maybe', 'probably'].includes(video.canPlayType(file.type)));
