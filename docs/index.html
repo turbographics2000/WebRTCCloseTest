@@ -28,7 +28,7 @@
                 onJoinMember: members => {
                     console.log('onJoinMember', memberId, members);
                     //connectedMembers = members
-                    var memberIds = Object.keys(members);
+                    var memberIds = Object.keys(members).filter(memberId => memberId !== myId);
                     for(var memberId in memberIds) {
                         webrtcStart(memberId);
                     }
