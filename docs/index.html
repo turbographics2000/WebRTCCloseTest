@@ -25,8 +25,8 @@
                     myId = id;
                     dispMyId.textContent = '自分のID:' + id
                 },
-                onJoinMember: members => {
-                    console.log('onJoinMember', members);
+                onJoined: members => {
+                    console.log('onJoined', members);
                     //connectedMembers = members
                     var memberIds = Object.keys(members).filter(memberId => memberId !== myId);
                     for(var i = 0; i < memberIds.length; i++) {
@@ -54,7 +54,7 @@
                 },
                 onFull: _ => {
                     console.log('onFull');
-                    disMyId.textContent = '満員'
+                    dispMyId.textContent = '満員'
                 }
             })
 

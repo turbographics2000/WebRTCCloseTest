@@ -10,6 +10,7 @@ class BroadcastChannelEx {
             onMyId: _ => {},
             onHost: _ => {},
             onJoinMember: _ => {},
+            onJoined: _ => {},
             onLeaveMember: _ => {},
             onFull: _ => {}
         }, options)
@@ -45,17 +46,28 @@ class BroadcastChannelEx {
             switch(msg.cmd) {
                 case 'join':
                     if(this.connectedMembers) {
-                        let resId = this.options.idList.filter(id => !this.connectedMembers[id])[0]
-                        if(resId) {
-                            this.connectedMembers[resId] = msg.remoteUUID
+                        let memberId = this.options.idList.filter(id => !this.connectedMembers[id])[0]
+                        if(memberId) {
                             if(!this.isHost) return
+                            var memberUUIDs = Object.entries(this.connectedMembers)
+                                                .filter(val => val[0] !== this.myId)
+                                                .map(val => val[1])
+                            for(var i = memberUUIDs.length; i--;) {
+                                this[bcSend]({
+                                    cmd: 'joinMember',
+                                    memberId: memberId,
+                                    memberUUID: msg.remoteUUID,
+                                    toUUID: memberUUIDs[i]
+                                })
+                            }
+                            this.connectedMembers[memberId] = msg.remoteUUID
                             this[bcSend]({
-                                cmd: 'joinRes',
-                                resId: resId,
+                                cmd: 'joined',
+                                memberId: memberId,
                                 toUUID: msg.remoteUUID,
                                 connectedMembers: this.connectedMembers
                             })
-                            //this.options.onJoinMember(resId);
+                            this.options.onJoinMember(this.connectedMembers)
                         } else {
                             this[bcSend]({
                                 cmd: 'full',
@@ -67,25 +79,31 @@ class BroadcastChannelEx {
                         this.connectedMembers = {}
                         this.myId = this.myId || this.options.idList[0]
                         this.connectedMembers[this.myId] = this.uuid
-                        let resId = this.options.idList.filter(id => id !== this.myId)[0]
-                        this.connectedMembers[resId] = msg.remoteUUID
+                        let memberId = this.options.idList.filter(id => id !== this.myId)[0]
+                        this.connectedMembers[memberId] = msg.remoteUUID
                         this[bcSend]({
-                            cmd: 'joinRes',
-                            resId: resId,
+                            cmd: 'joined',
+                            memberId: memberId,
                             toUUID: msg.remoteUUID,
                             connectedMembers: this.connectedMembers
                         })
                         this.isHost = true
-                        //this.options.onJoinMember(resId)
+                        this.options.onJoinMember(this.connectedMembers)
                     }
                     break
 
-                case 'joinRes':
-                    this.myId = msg.resId
-                    this.connectedMembers = msg.connectedMembers
-                    this.options.onJoinMember(this.connectedMembers);
+                case 'joinMember':
+                    this.connectedMembers = this.connectedMembers || {}
+                    this.connectedMembers[msg.memberId] = msg.memberUUID
+                    this.options.onJoinMember(this.connectedMembers)
                     break
-                
+
+                case 'joined':
+                    this.myId = msg.memberId
+                    this.connectedMembers = msg.connectedMembers
+                    this.options.onJoined(this.connectedMembers)
+                    break
+
                 case 'leave':
                     if(!this.connectedMembers) return
                     delete this.connectedMembers[msg.remoteId]

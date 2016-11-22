@@ -283,6 +283,7 @@ signalingChannel.onmessage = function(evt) {
     if (msg.desc) {
         if (!pcs[msg.remoteId]) webrtcStart(msg.remoteId);
         let pc = pcs[msg.remoteId];
+        pc.remoteId = remoteId;
         let desc = msg.desc;
         if (desc.type === 'offer') {
             console.log('receive offer', msg.remoteId, desc);
@@ -294,7 +295,7 @@ signalingChannel.onmessage = function(evt) {
                     return pc.setLocalDescription(new RTCSessionDescription(answer));
                 })
                 .then(_ => {
-                    signalingChannel.send({desc: pc.localDescription}, this.remoteId);
+                    signalingChannel.send({desc: pc.localDescription}, pc.remoteId);
                 })
                 .catch(error => {
                     console.log(error.name + ": " + error.message);
