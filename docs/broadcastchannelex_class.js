@@ -84,7 +84,7 @@ class BroadcastChannelEx {
                 case 'joinRes':
                     this.myId = msg.resId
                     this.connectedMembers = msg.connectedMembers
-                    this.options.onJoinMember(this.coonectedMembers)
+                    this.options.onJoinMember(this.connectedMembers)
                     break
                 
                 case 'leave':
