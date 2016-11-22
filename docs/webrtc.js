@@ -432,7 +432,7 @@ function createDummyStream(audio = false, video = true) {
     return createDummyAundioTrack(audio)
         .then(tracks => createDummyVideoTrack(video, tracks))
         .then(([streamInfo, tracks]) => {
-            streamInfo.stream = new MediaStrea(tracks);
+            streamInfo.stream = new MediaStream(tracks);
             return streamInfo;
         });
 }
