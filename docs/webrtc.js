@@ -8,8 +8,8 @@ let renderStreamId = null;
 let audioContext = new AudioContext();
 let myId = null;
 
+window.MediaStream = window.MediaStream || window.webkitMediaStream;
 window.RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection;
-
 
 let signalingChannel = new BroadcastChannel('webrtc-track-and-close-test');
 signalingChannel.send = (msg, toId) => {
@@ -26,6 +26,24 @@ addStream.onclick = function() {
         if(!renderStreamId) renderDummyVideoTrack();
     });
 };
+
+document.body.ondragover = function(evt) {
+    evt.preventDefault();
+}
+
+document.body.ondrop = function(evt) {
+    var video = document.createElement('video');
+    evt.preventDefault();
+    let files = evt.dataTransfer.files;
+    var streamCnt = Object.keys(streams[myId]).length;
+    var addMaxCnt = 3 - streamCnt;
+    var playableFiles = files.filter(file => ['maybe', 'probably'].includes(video.canPlayType(file.type)));
+    if(playableFiles.length && addMaxCnt) {
+        for(var i = 0; i < addMaxCnt; i++){
+            createVideoFileStream(playableFiles[i]);
+        }
+    }
+}
 
 addAudioTrack.onclick = function() {
     createDummyAundioTrack().then(([track]) => {
@@ -375,6 +393,34 @@ function addTracks(pc, stream) {
     }
 }
 
+function createVideoFileStream(file) {
+    var video = document.createElement('video');
+    video.src = file;
+    video.oncanplay = function() {
+        var src = audioContext.createMediaElementSource(video);
+        var dst = src.connect(audioContext.createMediaStreamDestination());
+        video.play();
+        var [cnv, ctx] = createRenderCanvas();
+        var audioTrack = dst.stream.getAudioTracks()[0];
+        var videoTrack = cnv.captureStream();
+        var stream = new MediaStream([audioTrack, videoTrack]);
+        streams[myId][stream.id] = {
+            cnv: cnv,
+            ctx: ctx,
+            media: video,
+            left: (cnv.width - (img.naturalWidth * ratio)) / 2,
+            top: (cnv.height - (img.naturalHeight * ratio)) / 2,
+            width: img.naturalWidth * ratio,
+            height: img.naturalHeight * ratio,
+            stream: stream
+        };
+        var remoteIds = Object.keys(pcs);
+        for(var remoteId in pcs) {
+            addTracks(pcs[remoteId], stream);
+        }
+    }
+}
+
 function createDummyStream(audio = false, video = true) {
     console.log('createDummyStream', audio, video);
     if(!audio && !video) throw 'createDummyStream argument error';
@@ -385,7 +431,7 @@ function createDummyStream(audio = false, video = true) {
     return createDummyAundioTrack(audio)
         .then(tracks => createDummyVideoTrack(video, tracks))
         .then(([streamInfo, tracks]) => {
-            streamInfo.stream = new (window.MediaStream || window.webkitMediaStream)(tracks);
+            streamInfo.stream = new MediaStrea(tracks);
             return streamInfo;
         });
 }
@@ -406,18 +452,7 @@ function createDummyVideoTrack(flg, tracks) {
     console.log('createDummyVideoTrack', flg, tracks);
     if(!flg) return Promise.resolve([{}, tracks]);
     return new Promise((resolve, reject) => {
-        let cnv = document.createElement('canvas');
-        cnv.style.position = 'absolute';
-        cnv.style.top = '-100000px';
-        document.body.appendChild(cnv);
-        cnv.width = 320;
-        cnv.height = 240;
-        var ctx = cnv.getContext('2d');
-        ctx.font = '44px arial';
-        ctx.strokStyle = 'black';
-        ctx.lineWidth = 2;
-        ctx.fillStyle = 'white';
-        ctx.textAlign = 'right';
+        var [cnv, ctx] = createRenderCanvas();
         let img = new Image();
         img.onload = function() {
             var ratio = Math.min(cnv.width / img.naturalWidth, cnv.height / img.naturalHeight);
@@ -425,11 +460,12 @@ function createDummyVideoTrack(flg, tracks) {
             resolve([{
                 cnv: cnv,
                 ctx: ctx,
-                img: img,
+                media: img,
                 left: (cnv.width - (img.naturalWidth * ratio)) / 2,
                 top: (cnv.height - (img.naturalHeight * ratio)) / 2,
                 width: img.naturalWidth * ratio,
                 height: img.naturalHeight * ratio,
+                time: true
             }, tracks]);
         }
         var no = Object.entries(streams[myId] || {}).length;
@@ -437,17 +473,35 @@ function createDummyVideoTrack(flg, tracks) {
     });
 }
 
+function createRenderCanvas() {
+    let cnv = document.createElement('canvas');
+    cnv.style.position = 'absolute';
+    cnv.style.top = '-100000px';
+    document.body.appendChild(cnv);
+    cnv.width = 320;
+    cnv.height = 240;
+    var ctx = cnv.getContext('2d');
+    ctx.font = '44px arial';
+    ctx.strokStyle = 'black';
+    ctx.lineWidth = 2;
+    ctx.fillStyle = 'white';
+    ctx.textAlign = 'right';
+    return [cnv, ctx];
+}
+
 function renderDummyVideoTrack() {
     renderStreamId = requestAnimationFrame(renderDummyVideoTrack);
     var localStreams = streams[myId];
     var keys = Object.keys(localStreams);
     for(var i = keys.length; i--;) {
-        var {cnv, ctx, img, left, top, width, height} = localStreams[keys[i]];
+        var {cnv, ctx, media, left, top, width, height, time = false} = localStreams[keys[i]];
         ctx.clearRect(0, 0, cnv.width, cnv.height);
-        ctx.drawImage(img, left, top, width, height);
-        var dt = new Date();
-        var dtStr = [dt.getHours(), dt.getMinutes(), dt.getSeconds()].map(v => ('0' + v).slice(-2)).join(':');
-        ctx.strokeText(dtStr, cnv.width - left - 1, cnv.height - top - 1);
-        ctx.fillText(dtStr, cnv.width - left - 3, cnv.height - top - 3);
+        ctx.drawImage(media, left, top, width, height);
+        if(time) {
+            var dt = new Date();
+            var dtStr = [dt.getHours(), dt.getMinutes(), dt.getSeconds()].map(v => ('0' + v).slice(-2)).join(':');
+            ctx.strokeText(dtStr, cnv.width - left - 1, cnv.height - top - 1);
+            ctx.fillText(dtStr, cnv.width - left - 3, cnv.height - top - 3);
+        }
     };
 }
