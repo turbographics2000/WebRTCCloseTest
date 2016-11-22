@@ -156,7 +156,7 @@ function addStreamElement(userId, streamInfo) {
         processor.clipping = false;
         processor.lastClip = 0;
         processor.volume = 0;
-        processor.averaging = 1;
+        processor.averaging = 0.95;
         streamInfo.audioProcessor.onaudioprocess = function(evt) {
             var buf = evt.inputBuffer.getChannelData(0);
             var bufLength = buf.length;
