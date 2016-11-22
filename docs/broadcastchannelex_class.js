@@ -77,6 +77,7 @@ class BroadcastChannelEx {
                         }
                     } else {
                         this.connectedMembers = {}
+                        this.isHost = true
                         this.myId = this.myId || this.options.idList[0]
                         this.connectedMembers[this.myId] = this.uuid
                         let memberId = this.options.idList.filter(id => id !== this.myId)[0]
@@ -87,7 +88,6 @@ class BroadcastChannelEx {
                             toUUID: msg.remoteUUID,
                             connectedMembers: this.connectedMembers
                         })
-                        this.isHost = true
                         this.options.onJoinMember(this.connectedMembers)
                     }
                     break

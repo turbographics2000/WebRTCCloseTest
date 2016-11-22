@@ -59,7 +59,12 @@
                 }
             })
 
+            bcex.on('log', logData => {
+                logs.push(logData);
+            });
+
             bcex.join()
+
         </script>
     </body>
 </html>
