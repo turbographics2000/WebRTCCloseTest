@@ -36,10 +36,10 @@ document.body.ondrop = function(evt) {
     evt.preventDefault();
     let files = Array.from(evt.dataTransfer.files);
     var streamCnt = Object.keys(streams[myId]).length;
-    var addMaxCnt = 3 - streamCnt;
     var playableFiles = files.filter(file => ['maybe', 'probably'].includes(video.canPlayType(file.type)));
+    var addCnt = Math.min(3 - streamCnt, playableFiles);
     if(playableFiles.length && addMaxCnt) {
-        for(var i = 0; i < addMaxCnt; i++){
+        for(var i = 0; i < addCnt; i++){
             createVideoFileStream(playableFiles[i]);
         }
     }
