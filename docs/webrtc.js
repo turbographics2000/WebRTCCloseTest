@@ -276,7 +276,7 @@ function removeTrackOnMouseLeave() {
 // }
 
 signalingChannel.onmessage = function(evt) {
-    let msg = JSON.parse(evt.data);
+    var msg = JSON.parse(evt.data);
     console.log('signalingChannel.onmessage', msg.toId);
     if('toId' in msg && msg.toId !== myId) return;
     if (msg.desc) {
