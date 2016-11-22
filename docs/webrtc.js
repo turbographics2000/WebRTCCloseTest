@@ -404,7 +404,7 @@ function createVideoFileStream(file) {
         video.play();
         var [cnv, ctx] = createRenderCanvas();
         var audioTrack = dst.stream.getAudioTracks()[0];
-        var videoTrack = cnv.captureStream();
+        var videoTrack = cnv.captureStream().getVideoTracks()[0];
         var stream = new MediaStream([audioTrack, videoTrack]);
         streams[myId][stream.id] = {
             cnv: cnv,
