@@ -396,6 +396,8 @@ function addTracks(pc, stream) {
 
 function createVideoFileStream(file) {
     var video = document.createElement('video');
+    video.width = 320;
+    video.height = 240;
     var srcURL = URL.createObjectURL(file);
     video.src = srcURL;
     video.oncanplay = function() {
@@ -411,10 +413,10 @@ function createVideoFileStream(file) {
             ctx: ctx,
             media: video,
             srcURL: srcURL,
-            left: (cnv.width - (img.naturalWidth * ratio)) / 2,
-            top: (cnv.height - (img.naturalHeight * ratio)) / 2,
-            width: img.naturalWidth * ratio,
-            height: img.naturalHeight * ratio,
+            left: 0,
+            top: 0,
+            width: 320,
+            height: 240,
             stream: stream
         };
         var remoteIds = Object.keys(pcs);
