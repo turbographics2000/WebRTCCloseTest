@@ -33,7 +33,7 @@ class BroadcastChannelEx {
         })
 
         this.bc.onmessage = evt => {
-            let msg = Object.assign({cmd: '-'}, JSON.parse(evt.data))
+            var msg = Object.assign({cmd: '-'}, JSON.parse(evt.data))
             if('toUUID' in msg && msg.toUUID !== this.uuid) return
 
             if(msg.eventName) {
