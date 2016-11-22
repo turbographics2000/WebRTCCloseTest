@@ -34,13 +34,13 @@
                     }
                     createDummyStream(false, true).then(streamInfo => {
                         addStreamElement(myId, streamInfo);
-                        addTracks(pc[memberIds[0]], streamInfo.stream);
+                        addTracks(pcs[memberIds[0]], streamInfo.stream);
                         if(!renderStreamId) renderDummyVideoTrack();
                         return streamInfo;
                     }).then(streamInfo => {
                         for(var i = 1; i < memberIds.length; i++) {
                             addStreamElement(myId, streamInfo);
-                            addTracks(pc[memberIds[i]], streamInfo.stream);
+                            addTracks(pcs[memberIds[i]], streamInfo.stream);
                         }
                     });
                 },
