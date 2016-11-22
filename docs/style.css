@@ -32,7 +32,7 @@ html, body {
 }
 
 .audio-meter-container {
-    height: 4px;
+    height: 8px;
 }
 
 .audio-meter {
