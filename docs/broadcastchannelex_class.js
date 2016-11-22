@@ -55,7 +55,7 @@ class BroadcastChannelEx {
                                 toUUID: msg.remoteUUID,
                                 connectedMembers: this.connectedMembers
                             })
-                            this.options.onJoinMember(resId);
+                            //this.options.onJoinMember(resId);
                         } else {
                             this[bcSend]({
                                 cmd: 'full',
@@ -77,13 +77,14 @@ class BroadcastChannelEx {
                         })
                         this.isHost = true
                         this.options.onMyId(this.myId)
-                        this.options.onJoinMember(resId)
+                        //this.options.onJoinMember(resId)
                     }
                     break
 
                 case 'joinRes':
                     this.myId = msg.resId
                     this.connectedMembers = msg.connectedMembers
+                    this.options.onJoinMember(this.coonectedMembers)
                     break
                 
                 case 'leave':

@@ -25,10 +25,13 @@
                     myId = id;
                     dispMyId.textContent = '自分のID:' + id
                 },
-                onJoinMember: (memberId, members) => {
+                onJoinMember: members => {
                     console.log('onJoinMember', memberId, members);
                     //connectedMembers = members
-                    webrtcStart(memberId)
+                    var memberIds = Object.keys(members);
+                    for(var memberId in memberIds) {
+                        webrtcStart(memberId);
+                    }
                 },
                 onLeaveMember: memberId => {
                     console.log('onLeaveMember', memberId);
