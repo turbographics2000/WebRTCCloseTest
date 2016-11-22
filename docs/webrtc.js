@@ -283,7 +283,7 @@ signalingChannel.onmessage = function(evt) {
     if (msg.desc) {
         if (!pcs[msg.remoteId]) webrtcStart(msg.remoteId);
         let pc = pcs[msg.remoteId];
-        pc.remoteId = remoteId;
+        pc.remoteId = msg.remoteId;
         let desc = msg.desc;
         if (desc.type === 'offer') {
             console.log('receive offer', msg.remoteId, desc);
