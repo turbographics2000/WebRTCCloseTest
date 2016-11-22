@@ -13,6 +13,7 @@ window.RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConne
 
 let signalingChannel = new BroadcastChannel('webrtc-track-and-close-test');
 signalingChannel.send = (msg, toId) => {
+    if(!toId) throw 'toId undefined';
     msg = Object.assign(msg, {remoteId: myId, toId});
     signalingChannel.postMessage(JSON.stringify(msg));
 }
@@ -293,7 +294,7 @@ signalingChannel.onmessage = function(evt) {
                     return pc.setLocalDescription(new RTCSessionDescription(answer));
                 })
                 .then(_ => {
-                    signalingChannel.send({desc: pc.localDescription}, msg.remoteId);
+                    signalingChannel.send({desc: pc.localDescription}, this.remoteId);
                 })
                 .catch(error => {
                     console.log(error.name + ": " + error.message);
