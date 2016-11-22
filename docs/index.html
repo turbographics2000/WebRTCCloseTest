@@ -12,6 +12,7 @@
             <span>※ストリームは合計3つまで追加できます。また、動画ファイルをD&amp;Dすれば動画のストリームを追加できます。</span>
             <button id="addStream">ダミーストリームを追加</button>
             <button id="addAudioTrack">オーディオトラックをすべてのストリームに追加</button>
+            <button id="logDownload">ログダウンロード</button>
         </div>
         <div id="container">
         </div>
@@ -21,39 +22,39 @@
             let bcex = new BroadcastChannelEx({
                 onMyId: id => {
                     //if(!id) debugger;
-                    console.log('onMyId', id);
-                    myId = id;
+                    log('bcex', 'event', 'onMyId', id)
+                    myId = id
                     dispMyId.textContent = '自分のID:' + id
                 },
                 onJoined: members => {
-                    console.log('onJoined', members);
+                    log('bcex', 'event', 'onJoined', members)
                     //connectedMembers = members
-                    var memberIds = Object.keys(members).filter(memberId => memberId !== myId);
+                    var memberIds = Object.keys(members).filter(memberId => memberId !== myId)
                     for(var i = 0; i < memberIds.length; i++) {
-                        webrtcStart(memberIds[i]);
+                        webrtcStart(memberIds[i])
                     }
                     createDummyStream(false, true).then(streamInfo => {
-                        addStreamElement(myId, streamInfo);
-                        addTracks(pcs[memberIds[0]], streamInfo.stream);
-                        if(!renderStreamId) renderDummyVideoTrack();
+                        addStreamElement(myId, streamInfo)
+                        addTracks(pcs[memberIds[0]], streamInfo.stream)
+                        if(!renderStreamId) renderDummyVideoTrack()
                         return streamInfo;
                     }).then(streamInfo => {
                         for(var i = 1; i < memberIds.length; i++) {
                             addStreamElement(myId, streamInfo);
-                            addTracks(pcs[memberIds[i]], streamInfo.stream);
+                            addTracks(pcs[memberIds[i]], streamInfo.stream)
                         }
                     });
                 },
                 onLeaveMember: memberId => {
-                    console.log('onLeaveMember', memberId);
-                    removeMember(memberId);
+                    log('bcex', 'event', 'onLeaveMember', memberId)
+                    removeMember(memberId)
                 },
                 onHost: _ => {
-                    console.log('onHost');
+                    log('bcex', 'event', 'onHost')
                     document.title = '★' + document.title
                 },
                 onFull: _ => {
-                    console.log('onFull');
+                    log('bcex', 'event', 'onFull')
                     dispMyId.textContent = '満員'
                 }
             })

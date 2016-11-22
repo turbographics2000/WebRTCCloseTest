@@ -18,6 +18,54 @@ signalingChannel.send = (msg, toId) => {
     signalingChannel.postMessage(JSON.stringify(msg));
 }
 
+logDownload.onclick = function() {
+    if(logs.length) {
+        logs.sort((a, b) => a.time - b.time);
+        var logTable = document.createElement('table');
+        var thead = document.createElement('thead');
+        var thtr = document.createElement('tr');
+        var thId = document.createElement('th');
+        thId.textContent = 'ID';
+        var thMsg = document.createElement('th');
+        thMsg.textContent = 'Message';
+        var thArg = document.createElement('th');
+        thArg.textContent = 'Arg';
+        var thArg2 = document.createElement('th');
+        thArg.textContent = 'Arg2';
+        var thArg3 = document.createElement('th');
+        thArg.textContent = 'Arg3';
+        thtr.appendChild(thId);
+        thtr.appendChild(thMsg);
+        thtr.appendChild(thArg);
+        thtr.appendChild(thArg2);
+        thtr.appendChild(thArg3);
+        thead.appendChild(thtr);
+        logTable.appendChild(thead);
+        var tbody = document.createElement('tbody');
+        for(var i = 0; i < logs.length; i++) {
+            var tbtr = document.createElement('tr');
+            var tdId = document.createElement('td');
+            tdId.textContent = logs[i].id;
+            var tdMsg = document.createElement('td');
+            tdMsg.textContent = logs[i].msg;
+            var tdArg = document.createElement('td');
+            tdArg.textContent = logs[i].arg;
+            var tdArg2 = document.createElement('td');
+            tdArg.textContent = logs[i].arg2;
+            var tdArg3 = document.createElement('td');
+            tdArg.textContent = logs[i].arg3;
+            tbtr.appendChild(tdId);
+            tbtr.appendChild(tdMsg);
+            tbtr.appendChild(tdArg);
+            tbtr.appendChild(tdArg2);
+            tbtr.appendChild(tdArg3);
+            tbody.appendChild(tbtr);
+        }
+        logTable.appendChild(tbody);
+        document.body.appendChild(logTable);
+    }
+}
+
 addStream.onclick = function() {
     createDummyStream(false, true).then(streamInfo => {
         addStreamElement(myId, streamInfo);
@@ -51,13 +99,13 @@ addAudioTrack.onclick = function() {
         var localStreams = Object.entries(streams[myId]).map(val => val[1].stream);
         for(let remoteId in pcs) {
             if(localStreams.length === 1){
-                console.log('pc.addTrack', localStreams[0].id);
+                log('function', 'call', `pcs[${remoteId}].addTrack`, localStreams[0].id);
                 trackSenders[track.id] = pcs[remoteId].addTrack(track, localStreams[0]);
             }else if(localStreams.length === 2) {
-                console.log('pc.addTrack', localStreams[0].id, localStreams[1].id);
+                log('function', 'call', `pcs[${remoteId}].addTrack`, localStreams[0].id, localStreams[1].id);
                 trackSenders[track.id] = pcs[remoteId].addTrack(track, localStreams[1]);
             }else if(localStreams.length === 3) {
-                console.log('pc.addTrack', localStreams[0].id, localStreams[1].id, localStreams[2].id);
+                log('function', 'call', `pcs[${remoteId}].addTrack`, localStreams[0].id, localStreams[1].id, localStreams[2].id);
                 trackSenders[track.id] = pcs[remoteId].addTrack(track, localStreams[0], localStreams[1], localStreams[2]);
             }
         }
@@ -82,21 +130,21 @@ addAudioTrack.onclick = function() {
 // }
 
 function joinRoom() {
-    console.log('joinRoom');
+    log('function', 'call', 'joinRoom');
     signalingChannel.postMessage(JSON.stringify({join: true, remoteId: idList[0]}));
 }
 
 function addStreamElement(userId, streamInfo) {
-    console.log('addStreamElement', userId, streamInfo);
+    log('function', 'call', 'addStreamElement', userId, streamInfo);
     //var container = document.body;
     var stream = streamInfo.stream;
 
     stream.onaddtrack = function(evt) {
-        console.log('onaddtrack', 'streamId:' + this.id, 'trackId:' + evt.track.id);
+        log('function', 'call', 'onaddtrack', 'streamId:' + this.id, 'trackId:' + evt.track.id);
         createTrackButton(this.id, evt.track.id);
     }
     stream.onremovetrack = function(evt) {
-        console.log('onremovetrack', 'streamId:' + this.id, 'trackId:' + evt.track.id);
+        log('function', 'call', 'onremovetrack', 'streamId:' + this.id, 'trackId:' + evt.track.id);
     }
 
     if(streams[userId] && streams[userId][stream.id]) return;
@@ -181,7 +229,7 @@ function createTrackButton(streamId, trackId) {
 }
 
 function removeMember(memberId) {
-    console.log('removeMebmer', memberId);
+    log('function', 'call', 'removeMebmer', memberId);
     var streamInfos = Object.entries(streams[memberId] || {}).map(val => val[1]);
     var title = document.getElementById('streamstitle_' + memberId);
     var streamContainer = document.getElementById('streams_' + memberId);
@@ -197,7 +245,7 @@ function removeMember(memberId) {
 }
 
 function removeStream(streamInfo) {
-    console.log('removeStream', streamInfo);
+    log('function', 'call', 'removeStream', streamInfo);
     if(streamInfo.srcURL) URL.revokeObjectURL(streamInfo.srcURL);
     streamInfo.stream.getTracks().forEach(track => {
         delete trackSenders[track.id];
@@ -272,13 +320,13 @@ function removeTrackOnMouseLeave() {
 //             }
 //         })
 //         .catch(error => {
-//             console.log(error.name + ": " + error.message);
+//             log('function', 'call', error.name + ": " + error.message);
 //         });
 // }
 
 signalingChannel.onmessage = function(evt) {
     var msg = JSON.parse(evt.data);
-    console.log('signalingChannel.onmessage', msg.toId);
+    log('function', 'call', 'signalingChannel.onmessage', msg.toId);
     if('toId' in msg && msg.toId !== myId) return;
     if (!pcs[msg.remoteId]) {
         webrtcStart(msg.remoteId);
@@ -295,25 +343,28 @@ signalingChannel.onmessage = function(evt) {
         pc.remoteId = msg.remoteId;
         let desc = msg.desc;
         if (desc.type === 'offer') {
-            console.log('receive offer', msg.remoteId, desc);
+            log('WebRTC', 'message', 'receive offer', msg.remoteId, desc);
+            log('WebRTC', 'function', 'setRemoteDescription()', desc);
             pc.setRemoteDescription(new RTCSessionDescription(desc))
                 .then(_ =>{
                     return pc.createAnswer();
                 })
                 .then(answer => {
+                    log('WebRTC', 'function', 'setLocalDescription()', answer);
                     return pc.setLocalDescription(new RTCSessionDescription(answer));
                 })
                 .then(_ => {
                     signalingChannel.send({desc: pc.localDescription}, pc.remoteId);
                 })
                 .catch(error => {
-                    console.log(error.name + ": " + error.message);
+                    log('WebRTC', 'error', error.name + ": " + error.message);
                 });
         } else if (desc.type === 'answer') {
-            console.log('recevie answer', msg.remoteId, desc);
+            log('WebRTC', 'message', 'recevie answer', msg.remoteId, desc);
+            log('WebRTC', 'function', 'setRemoteDescription()', desc);
             pc.setRemoteDescription(new RTCSessionDescription(desc))
                 .catch(error => {
-                    console.log(error.name + ": " + error.message);
+                    log('WebRTC', 'error', error.name + ": " + error.message);
                 })
                 .then(_ => {
                     if(window.chrome) {
@@ -327,40 +378,47 @@ signalingChannel.onmessage = function(evt) {
                     }
                 });
         } else
-            console.log("Unsupported SDP type. Your code may differ here.");
+            log('WebRTC error', 'Unsupported SDP type. Your code may differ here.');
     } else {
-        console.log('receve candidate', msg.remoteId, msg.candidate);
+        log('WebRTC', 'message', 'receve candidate', msg.remoteId, msg.candidate);
+        log('WebRTC', 'function', 'addIceCandidate()', msg.candidate);
         pcs[msg.remoteId].addIceCandidate(new RTCIceCandidate(msg.candidate))
             .catch(error => {
-                console.log(error.name + ": " + error.message);
+                log('WebRTC error', error.name + ": " + error.message);
             });
     }
 };
 
 function webrtcStart(remoteId) {
-    console.log('webrtStart', remoteId);
+    logs = [];
+    log('function', 'call', 'webrtStart', remoteId);
+    log('WebRTC', 'function', 'new RTCPeerConnection', configuration);
     var pc = pcs[remoteId] = new RTCPeerConnection(configuration);
     pc.remoteId = remoteId;
 
     pc.onicecandidate = evt => {
-        console.log('onicecandidate', evt.candidate);
+        log('WebRTC', 'event', 'onicecandidate', evt.candidate);
         if(evt.candidate) {
             signalingChannel.send({candidate: evt.candidate}, remoteId);
         }
     }
     
     pc.onnegotiationneeded = _ => {
-        console.log('onnegotiationneeded');
+        log('WebRTC', 'event', 'onnegotiationneeded');
+        log('WebRTC', 'function', 'createOffer');
         pc.createOffer()
-            .then(offer => pc.setLocalDescription(offer))
+            .then(offer => {
+                log('WebRTC', 'function', 'setLocalDescription', offer);
+                return pc.setLocalDescription(offer);
+            })
             .then(_ => signalingChannel.send({desc: pc.localDescription}, remoteId))
             .catch(error => {
-                console.log(error.name + ": " + error.message);
+                log('WebRTC', 'error', error.name + ": " + error.message);
             });
     };
     
     pc.oniceconnectionstatechange = function(evt) {
-        console.log('oniceconnectionstatechange', pc.iceConnectionState);
+        log('WebRTC', 'event', 'oniceconnectionstatechange', pc.iceConnectionState);
         if(['closed', 'failed'].includes(pc.iceConnectionState)) {
             if(pcs[this.remoteId]) removeMember(this.remoteId);
         }
@@ -368,14 +426,14 @@ function webrtcStart(remoteId) {
 
     if('ontrack' in pc) {
         pc.ontrack = function(evt) {
-            console.log('ontrack');
+            log('WebRTC', 'event', 'ontrack');
             if(evt.track.kind === 'video') {
                 addStreamElement(remoteId, {stream: evt.streams[0]});
             }
         };
     } else {
         pc.onaddstream = function(evt) {
-            console.log('onaddstream');
+            log('WebRTC', 'event', 'onaddstream');
             addStreamElement(this.remoteId, {stream: evt.stream});
         }
     }
@@ -389,17 +447,20 @@ function webrtcStart(remoteId) {
 }
 
 function addTracks(pc, stream) {
-    console.log('addTracks', pc, stream);
+    log('function', 'call', 'addTracks', pc, stream);
     if(pc.addTrack) {
         stream.getTracks().forEach(track => {
+            log('WebRTC', 'function', 'pc.addTrack', stream.id);
             trackSenders[track.id] = pc.addTrack(track, stream);
         });
     } else {
+        log('WebRTC', 'function', 'pc.addStream', stream.id);
         pc.addStream(stream);
     }
 }
 
 function createVideoFileStream(file) {
+    log('functoin', 'call', 'createVideoFileStream', file);
     var video = document.createElement('video');
     video.width = 320;
     video.height = 240;
@@ -434,10 +495,10 @@ function createVideoFileStream(file) {
 }
 
 function createDummyStream(audio = false, video = true) {
-    console.log('createDummyStream', audio, video);
+    log('function', 'call', 'createDummyStream', audio, video);
     if(!audio && !video) throw 'createDummyStream argument error';
     if(Object.entries(streams[myId] || {}).length >= 3) {
-        console.log('limit 3 streams');
+        log('log', 'limit 3 streams');
         return;
     }
     return createDummyAundioTrack(audio)
@@ -449,7 +510,7 @@ function createDummyStream(audio = false, video = true) {
 }
 
 function createDummyAundioTrack(flg = true) {
-    console.log('createDummyAudioTrack', flg);
+    log('function', 'call', 'createDummyAudioTrack', flg);
     if(!flg) return Promise.resolve([]);
     return new Promise((resolve, reject) => {
         let oscillator = audioContext.createOscillator();
@@ -461,7 +522,7 @@ function createDummyAundioTrack(flg = true) {
 }
 
 function createDummyVideoTrack(flg, tracks) {
-    console.log('createDummyVideoTrack', flg, tracks);
+    log('function', 'call', 'createDummyVideoTrack', flg, tracks);
     if(!flg) return Promise.resolve([{}, tracks]);
     return new Promise((resolve, reject) => {
         var [cnv, ctx] = createRenderCanvas();
@@ -517,3 +578,22 @@ function renderDummyVideoTrack() {
         }
     };
 }
+
+
+var logs = [];
+var logTypes = ['WebRTC'];
+var logSubTypes = ['event', 'function'];
+bcex.on('log', logData => {
+    logs.push(logData);
+});
+
+function log(type, subType, msg, arg, arg2, arg3) {
+    if(logTypes.includes(type) && logSubTypes.includes(subType)) {
+        var time = window.performance.now();
+        if(!bcex.isHost) {
+            bcex.emit('log', {id: bcex.myId, msg, arg, arg2, arg3, time });
+        }
+        console.log(msg, dtStr);
+    }
+}
+
