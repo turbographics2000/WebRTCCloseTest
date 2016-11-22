@@ -397,7 +397,7 @@ function addTracks(pc, stream) {
 function createVideoFileStream(file) {
     var video = document.createElement('video');
     var srcURL = URL.createObjectURL(file);
-    video.srcObject = file;
+    video.src = srcURL;
     video.oncanplay = function() {
         var src = audioContext.createMediaElementSource(video);
         var dst = src.connect(audioContext.createMediaStreamDestination());
