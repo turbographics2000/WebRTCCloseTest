@@ -159,7 +159,7 @@ function addStreamElement(userId, streamInfo) {
         processor.averaging = 0.95;
         streamInfo.audioProcessor.onaudioprocess = function(evt) {
             var buf = evt.inputBuffer.getChannelData(0);
-            var bufLength = bug.length;
+            var bufLength = buf.length;
             var sum = 0;
             for(var i = bufLength; i--;) {
                 sum += buf[i] * buf[i];
