@@ -155,11 +155,13 @@ function addStreamElement(userId, streamInfo) {
         streamInfo.audioProcessor.audioMeter = audioMeter;
         streamInfo.audioProcessor.onaudioprocess = function(evt) {
             var buf = evt.inputBuffer.getChannelData(0);
-            var maxVal = 0;
-            for(var i = buf.length; i--;) {
-                maxVal = Math.max(maxVal, buf[i]);
+            var bufLength = bug.length;
+            var sum = 0;
+            for(var i = bufLength; i--;) {
+                sum += buf[i] * buf[i];
             }
-            this.audioMeter.style.width = Math.min(~~(maxVal * 100), 100) + '%';
+            //this.audioMeter.style.width = Math.min(~~(maxVal * 100), 100) + '%';
+            this.audioMeter.style.width = Math.sqrt(sum / bufLength) + '%';
         }
         streamInfo.mediaStreamSource.connect(streamInfo.audioProcessor);
         streamInfo.audioProcessor.connect(audioContext.destination);
